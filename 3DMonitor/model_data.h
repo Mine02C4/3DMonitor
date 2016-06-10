@@ -1,24 +1,24 @@
-ï»¿// Copyright 2011 MineStudio.
-// ModelDataã‚¯ãƒ©ã‚¹ã‚’å®£è¨€ã—ã¾ã™ã€‚3Dãƒ¢ãƒ‡ãƒ«ã®æƒ…å ±ã‚’æ ¼ç´ã—ã¾ã™ã€‚
+// Copyright 2011 MineStudio.
+// ModelDataƒNƒ‰ƒX‚ğéŒ¾‚µ‚Ü‚·B3Dƒ‚ƒfƒ‹‚Ìî•ñ‚ğŠi”[‚µ‚Ü‚·B
 
 #ifndef NPCA3DMONITOR__MODELDATA_H_
 #define NPCA3DMONITOR__MODELDATA_H_
 
 #include <Windows.h>
-#include <d3dx9.h>
+#include <d3dx10.h>
 
 class ModelData {
-	LPD3DXMESH				mesh_;			// ã‚·ã‚¹ãƒ†ãƒ ä¸­ã®ãƒ¡ãƒƒã‚·ãƒ¥ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
-	D3DMATERIAL9*			materials_;		// ãƒ¡ãƒƒã‚·ãƒ¥ã®è³ªæ„Ÿ(materials)
-	LPDIRECT3DTEXTURE9*		textures_;		// ãƒ¡ãƒƒã‚·ãƒ¥ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£(texture)
-	DWORD					num_materials_;	// ãƒ¡ãƒƒã‚·ãƒ¥è³ªæ„Ÿã®æ•°
-	float					scale_;			// ãƒ¡ãƒƒã‚·ãƒ¥ã®å€ç‡
+	LPD3DXMESH				mesh_;			// ƒVƒXƒeƒ€’†‚ÌƒƒbƒVƒ…ƒIƒuƒWƒFƒNƒg
+	D3DMATERIAL9*			materials_;		// ƒƒbƒVƒ…‚Ì¿Š´(materials)
+	LPDIRECT3DTEXTURE9*		textures_;		// ƒƒbƒVƒ…‚ÌƒeƒNƒXƒ`ƒƒ(texture)
+	DWORD					num_materials_;	// ƒƒbƒVƒ…¿Š´‚Ì”
+	float					scale_;			// ƒƒbƒVƒ…‚Ì”{—¦
 
 	HRESULT		LoadFromXFileModel(LPCTSTR,LPDIRECT3DDEVICE9);
 	HRESULT		LoadTexture(LPSTR,LPDIRECT3DTEXTURE9*,LPDIRECT3DDEVICE9);
 	void		InitModel(void);
 public:
-	// ãƒ‘ãƒ–ãƒªãƒƒã‚¯ãƒ¡ãƒ³ãƒé–¢æ•°
+	// ƒpƒuƒŠƒbƒNƒƒ“ƒoŠÖ”
 	ModelData(const TCHAR*,int*,float,LPDIRECT3DDEVICE9);
 	~ModelData(void);
 	VOID				RenderModel(LPDIRECT3DDEVICE9);

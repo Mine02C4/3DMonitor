@@ -1,5 +1,5 @@
-ï»¿// Copyright 2011 MineStudio.
-// ProgramEngineã‚¯ãƒ©ã‚¹ã‚’å®£è¨€ã—ã¾ã™ã€‚ãƒ—ãƒ­ã‚°ãƒ©ãƒ ã®åˆ¶å¾¡ã‚’å¸ã‚Šã€ãƒ—ãƒ­ã‚°ãƒ©ãƒ ã®é€²è¡Œå½¹ã‚’æ‹…ã„ã¾ã™ã€‚
+// Copyright 2011 MineStudio.
+// ProgramEngineƒNƒ‰ƒX‚ðéŒ¾‚µ‚Ü‚·BƒvƒƒOƒ‰ƒ€‚Ì§Œä‚ðŽi‚èAƒvƒƒOƒ‰ƒ€‚Ìis–ð‚ð’S‚¢‚Ü‚·B
 
 #ifndef NPCA3DMONITOR__PROGRAMENGINE_H_
 #define NPCA3DMONITOR__PROGRAMENGINE_H_

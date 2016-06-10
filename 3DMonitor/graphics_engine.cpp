@@ -1,5 +1,5 @@
-ï»¿// Copyright 2011 MineStudio.
-// GraphicsEngineã‚¯ãƒ©ã‚¹ã®å®šç¾©ã‚’è¡Œã„ã¾ã™ã€‚
+// Copyright 2011 MineStudio.
+// GraphicsEngineƒNƒ‰ƒX‚Ì’è‹`‚ğs‚¢‚Ü‚·B
 
 #include "chead.h"
 
@@ -9,26 +9,26 @@
 
 #include "dx_engine.h"
 #include "file_names.h"
-#include "model_data.h"
-#include "object_box.h"
+//#include "model_data.h"
+//#include "object_box.h"
 
-// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
 GraphicsEngine::GraphicsEngine(DXEngine* tmp_dx, HRESULT* result) {
 	dx_engine_	= tmp_dx;
-	model_f14_	= NULL;
-	object_box_f14_	= NULL;
+//	model_f14_	= NULL;
+//	object_box_f14_	= NULL;
 
-	int	error_flag = FALSE;
+/*	int	error_flag = FALSE;
 	model_f14_	= new ModelData(kFilePot, &error_flag, 0.5f, dx_engine_->get_d3d_device());
 	if(error_flag==TRUE) {
 		*result = E_FAIL;
 		return;
-	}
+	}*/
 
-	object_box_f14_	= new ObjectBox(model_f14_, D3DXVECTOR3(0.0f,0.0f,0.0f), DirectionYPR(0.0f,0.0f,-(D3DX_PI/2.0f)));
+	//object_box_f14_	= new ObjectBox(model_f14_, D3DXVECTOR3(0.0f,0.0f,0.0f), DirectionYPR(0.0f,0.0f,-(D3DX_PI/2.0f)));
 
-	// ãƒ©ã‚¤ãƒˆ
-	ZeroMemory(&main_light_,sizeof(D3DLIGHT9));
+	// ƒ‰ƒCƒg
+/*	ZeroMemory(&main_light_,sizeof(D3DLIGHT9));
 	main_light_.Type		= D3DLIGHT_DIRECTIONAL;
 	main_light_.Diffuse.r	= 1.0f;
 	main_light_.Diffuse.g	= 0.9f;
@@ -36,59 +36,60 @@ GraphicsEngine::GraphicsEngine(DXEngine* tmp_dx, HRESULT* result) {
 	main_light_.Diffuse.a	= 0.0f;
 	main_light_.Direction	= D3DXVECTOR3(1.0f,-1.0f,1.0f);
 
-	// ã‚«ãƒ¡ãƒ©
-	main_camera_	= CameraParam(D3DX_PI/4,1.0f,800.0f,D3DXVECTOR3(0.0f,20.0f,-80.0f));
+	// ƒJƒƒ‰
+	main_camera_	= CameraParam(D3DX_PI/4,1.0f,800.0f,D3DXVECTOR3(0.0f,20.0f,-80.0f));*/
 }
 
-// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+// ƒfƒXƒgƒ‰ƒNƒ^
 GraphicsEngine::~GraphicsEngine() {
-	SAFE_DELETE(object_box_f14_);
-	SAFE_DELETE(model_f14_);
+//	SAFE_DELETE(object_box_f14_);
+//	SAFE_DELETE(model_f14_);
 }
 
-// ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°
+// ƒŒƒ“ƒ_ƒŠƒ“ƒO
 void GraphicsEngine::Render()
 {
-	LPDIRECT3DDEVICE9	d3d_device = dx_engine_->get_d3d_device();
-	d3d_device->Clear(0,NULL,D3DCLEAR_TARGET|D3DCLEAR_ZBUFFER,D3DCOLOR_XRGB(0x00,0x00,0x00),1.0f,0);
+	ID3D10Device*	d3d_device = dx_engine_->get_d3d_device();
+	 float color[4] = { 0.0f, 0.125f, 0.6f, 1.0f };
+	dx_engine_->ClearRenderTargetView(color);
 
-	// ã‚·ãƒ¼ãƒ³ã®é–‹å§‹
-	if(SUCCEEDED(d3d_device->BeginScene()))
-	{
-		// ãƒ©ã‚¤ãƒˆã®è¨­å®š
-		dx_engine_->SetLight(kLightNumberMain,main_light_);
-		// ã‚«ãƒ¡ãƒ©ã®è¨­å®š
-		//dx_engine_->SetCamera(main_camera_);
-		// ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã®è¨­å®š
-		dx_engine_->SetRender(kRenderStateNormal);
-		// F14ã‚’ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°
-		//object_box_f14_->Render(dx_engine_);
+	//// ƒV[ƒ“‚ÌŠJn
+	//if(SUCCEEDED(d3d_device->BeginScene()))
+	//{
+	//	// ƒ‰ƒCƒg‚Ìİ’è
+	//	dx_engine_->SetLight(kLightNumberMain,main_light_);
+	//	// ƒJƒƒ‰‚Ìİ’è
+	//	//dx_engine_->SetCamera(main_camera_);
+	//	// ƒŒƒ“ƒ_ƒŠƒ“ƒO‚Ìİ’è
+	//	dx_engine_->SetRender(kRenderStateNormal);
+	//	// F14‚ğƒŒƒ“ƒ_ƒŠƒ“ƒO
+	//	//object_box_f14_->Render(dx_engine_);
 
-		// å…¨è¦–ç‚¹ã§ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°é–‹å§‹
-		CameraParam	tmp_camera;
-		for(int i=0;i<kNumOfParallax;i++) {
-			//d3d_device->Clear(0, NULL, D3DCLEAR_TARGET|D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0x00,0x00,0x00),1.0f,0);
-			dx_engine_->SetViewTarget(i);
-			GetCameraParamByViewId(&main_camera_, i, &tmp_camera);
-			dx_engine_->SetCamera(tmp_camera);
-			object_box_f14_->Render(dx_engine_);
-		}
+	//	// ‘S‹“_‚ÅƒŒƒ“ƒ_ƒŠƒ“ƒOŠJn
+	//	CameraParam	tmp_camera;
+	//	for(int i=0;i<kNumOfParallax;i++) {
+	//		//d3d_device->Clear(0, NULL, D3DCLEAR_TARGET|D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0x00,0x00,0x00),1.0f,0);
+	//		dx_engine_->SetViewTarget(i);
+	//		GetCameraParamByViewId(&main_camera_, i, &tmp_camera);
+	//		dx_engine_->SetCamera(tmp_camera);
+	//		object_box_f14_->Render(dx_engine_);
+	//	}
 
-		// å„è¦–ç‚¹ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã®çµæœã‚’ãƒãƒƒã‚¯ãƒãƒƒãƒ•ã‚¡ãƒ¼ã®ã‚³ãƒ”ãƒ¼
-		dx_engine_->SetDefaultBuffer();
-		dx_engine_->SetCamera(main_camera_);
-		object_box_f14_->Render(dx_engine_);
+	//	// Še‹“_ƒŒƒ“ƒ_ƒŠƒ“ƒO‚ÌŒ‹‰Ê‚ğƒoƒbƒNƒoƒbƒtƒ@[‚ÌƒRƒs[
+	//	dx_engine_->SetDefaultBuffer();
+	//	dx_engine_->SetCamera(main_camera_);
+	//	object_box_f14_->Render(dx_engine_);
 
-		HDC buffer_dc;
-		dx_engine_->GetBufferDC(&buffer_dc);
-		
-		win_engine->RenderBuffer(&buffer_dc);
+	//	HDC buffer_dc;
+	//	dx_engine_->GetBufferDC(&buffer_dc);
+	//	
+	//	win_engine->RenderBuffer(&buffer_dc);
 
-		dx_engine_->ReleaseBufferDC(&buffer_dc);
+	//	dx_engine_->ReleaseBufferDC(&buffer_dc);
 
-		// ã‚·ãƒ¼ãƒ³ã®çµ‚äº†
-		d3d_device->EndScene();
-	}
+	//	// ƒV[ƒ“‚ÌI—¹
+	//	d3d_device->EndScene();
+	//}
 
 	frame_counter++;
 	if((frame_counter == 101)||(frame_counter == 1)){
@@ -97,11 +98,11 @@ void GraphicsEngine::Render()
 		}
 	}
 
-	// æç”»ã‚’åæ˜ 
+	// •`‰æ‚ğ”½‰f
 	//d3d_device->Present(NULL,NULL,NULL,NULL);
 }
 
-// ä¸­å¤®ã‚«ãƒ¡ãƒ©ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã¨è¦–ç‚¹IDã‹ã‚‰ã‚«ãƒ¡ãƒ©ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’ç”Ÿæˆ
+// ’†‰›ƒJƒƒ‰‚Ìƒpƒ‰ƒ[ƒ^‚Æ‹“_ID‚©‚çƒJƒƒ‰‚Ìƒpƒ‰ƒ[ƒ^‚ğ¶¬
 void GraphicsEngine::GetCameraParamByViewId(const CameraParam* main_camera,const int camera_id, CameraParam* out_camera) {
 	*out_camera = CameraParam(*main_camera);
 	double difference_view	= NULL;
@@ -115,9 +116,9 @@ void GraphicsEngine::GetCameraParamByViewId(const CameraParam* main_camera,const
 	}
 }
 
-// 1ãƒ•ãƒ¬ãƒ¼ãƒ ã®å‡¦ç†
+// 1ƒtƒŒ[ƒ€‚Ìˆ—
 void GraphicsEngine::ProcessGraphics() {
 //	dx_engine_->GetInput();
-	object_box_f14_->TestSpin();
+//	object_box_f14_->TestSpin();
 	Render();
 }

@@ -1,11 +1,11 @@
-﻿// Copyright 2011 MineStudio.
-// ObjectBoxクラスを宣言します。3Dオブジェクトの情報を格納します。
-// このクラス単体でも使用できますが継承して使った方が制御しやすいです。
+// Copyright 2011 MineStudio.
+// ObjectBox�N���X��錾���܂��B3D�I�u�W�F�N�g�̏����i�[���܂��B
+// ���̃N���X�P�̂ł��g�p�ł��܂����p�����Ďg�����������䂵�₷���ł��B
 
 #ifndef NPCA3DMONITOR__OBJECTBOX_H_
 #define NPCA3DMONITOR__OBJECTBOX_H_
 
-#include <d3dx9.h>
+#include <d3dx10.h>
 
 #include "dx_engine.h"
 

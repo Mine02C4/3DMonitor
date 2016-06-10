@@ -1,10 +1,10 @@
-ï»¿// Copyright 2011 MineStudio.
-// GraphicsEngineã‚¯ãƒ©ã‚¹ã‚’å®£è¨€ã—ã¾ã™ã€‚3Dã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ã‚¹åˆ¶å¾¡ã®ä¸­å¿ƒã‚’æ‹…ã„ã¾ã™ã€‚
+// Copyright 2011 MineStudio.
+// GraphicsEngineƒNƒ‰ƒX‚ğéŒ¾‚µ‚Ü‚·B3DƒOƒ‰ƒtƒBƒbƒNƒX§Œä‚Ì’†S‚ğ’S‚¢‚Ü‚·B
 
 #ifndef NPCA3DMONITOR__GRAPHICSENGINE_H_
 #define NPCA3DMONITOR__GRAPHICSENGINE_H_
 
-#include <d3dx9.h>
+#include <d3dx10.h>
 
 #include "typedefs.h"
 
@@ -15,9 +15,9 @@ class ObjectBox;
 class GraphicsEngine
 {
 	DXEngine*			dx_engine_;
-	ModelData*			model_f14_;
-	ObjectBox*			object_box_f14_;
-	D3DLIGHT9			main_light_;
+//	ModelData*			model_f14_;
+//	ObjectBox*			object_box_f14_;
+//	D3DLIGHT9			main_light_;
 	CameraParam			main_camera_;
 
 	void		Render(void);

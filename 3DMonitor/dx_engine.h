@@ -1,42 +1,48 @@
-ï»¿// Copyright 2011 MineStudio.
-// DXEngineã‚¯ãƒ©ã‚¹ã‚’å®£è¨€ã—ã¾ã™ã€‚ã“ã®ã‚¯ãƒ©ã‚¹ã¯DirectXã®ä¸­å¿ƒéƒ¨ã‚’å¸ã‚‹éƒ¨å“ã‚’é›†ã‚ãŸç‰©ã§ã™ã€‚
+// Copyright 2011 MineStudio.
+// DXEngineƒNƒ‰ƒX‚ğéŒ¾‚µ‚Ü‚·B‚±‚ÌƒNƒ‰ƒX‚ÍDirectX‚Ì’†S•”‚ği‚é•”•i‚ğW‚ß‚½•¨‚Å‚·B
 
 #ifndef NPCA3DMONITOR__DXENGINE_H_
 #define NPCA3DMONITOR__DXENGINE_H_
 
 #include <Windows.h>
-#include <d3dx9.h>
+#include <d3dx10.h>
 #include <dinput.h>
 
 #include "typedefs.h"
 #include "appdefs.h"
 
-// DirectInputãƒãƒ¼ã‚¸ãƒ§ãƒ³æŒ‡å®š
+// DirectInputƒo[ƒWƒ‡ƒ“w’è
 #define kDirectInputVersion 0x0800
 
-// Direct3D ãƒ•ãƒ¬ã‚­ã‚·ãƒ–ãƒ«é ‚ç‚¹ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã«ã‚ˆã‚‹é ‚ç‚¹å®£è¨€
+// Direct3D ƒtƒŒƒLƒVƒuƒ‹’¸“_ƒtƒH[ƒ}ƒbƒg‚É‚æ‚é’¸“_éŒ¾
 #define kDirect3DFVFCustomVertex1	(D3DFVF_XYZ|D3DFVF_DIFFUSE)
 
-// ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¹ãƒ†ãƒ¼ãƒˆã®è¨­å®š
+// ƒŒƒ“ƒ_ƒŠƒ“ƒOƒXƒe[ƒg‚Ìİ’è
 enum RenderState {
-	kRenderStateNormal,	// é€šå¸¸ã®ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°æ–¹æ³•
+	kRenderStateNormal,	// ’Êí‚ÌƒŒƒ“ƒ_ƒŠƒ“ƒO•û–@
 	kRenderStateSq,
 	kRenderStateTest
 };
 
-// ãƒ©ã‚¤ãƒˆã®ãƒªã‚¹ãƒˆ
+// ƒ‰ƒCƒg‚ÌƒŠƒXƒg
 enum LightNumber {
-	kLightNumberMain,		// ãƒ¡ã‚¤ãƒ³ã®ãƒ©ã‚¤ãƒˆ
+	kLightNumberMain,		// ƒƒCƒ“‚Ìƒ‰ƒCƒg
 	kLightNumberEnd
 };
 
-// FVFã®æ§‹é€ ä½“
+// FVF‚Ì\‘¢‘Ì
 struct CustomVertex1 {
 	D3DXVECTOR3	position;
 	D3DCOLOR	color;
 };
 
-// 3Dã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®å‘ãã‚’æ ¼ç´
+// DX10
+struct SimpleVertex
+{
+    D3DXVECTOR3 Pos;
+};
+
+// 3DƒIƒuƒWƒFƒNƒg‚ÌŒü‚«‚ğŠi”[
 struct DirectionYPR {
 	float	Yaw;
 	float	Pitch;
@@ -56,27 +62,37 @@ struct DirectionYPR {
 class DXEngine
 {
 	// Direct3D
-	BOOL					full_screen_flag_;	// ãƒ•ãƒ«ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ãƒ•ãƒ©ã‚°ã€‚ã‚‚ã¡ã‚ã‚“TRUEã§ãƒ•ãƒ«ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ã€FALSEã§ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ¢ãƒ¼ãƒ‰
-	LPDIRECT3D9				d3d_;				// D3Dã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
-	LPDIRECT3DDEVICE9		d3d_device_;		// D3Dãƒ‡ãƒã‚¤ã‚¹
-	D3DPRESENT_PARAMETERS	d3d_present_params_;// ãƒ—ãƒ¬ã‚¼ãƒ³ãƒ†ãƒ¼ã‚·ãƒ§ãƒ³ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®æ ¼ç´
-	LPDIRECT3DSURFACE9		back_buffer_;		//ãƒãƒƒã‚¯ãƒãƒƒãƒ•ã‚¡æ ¼ç´ç”¨
+	BOOL					full_screen_flag_;	// ƒtƒ‹ƒXƒNƒŠ[ƒ“ƒtƒ‰ƒOB‚à‚¿‚ë‚ñTRUE‚Åƒtƒ‹ƒXƒNƒŠ[ƒ“AFALSE‚ÅƒEƒBƒ“ƒhƒEƒ‚[ƒh
+	/*LPDIRECT3D9			d3d_;				// D3DƒIƒuƒWƒFƒNƒg
+	LPDIRECT3DDEVICE9		d3d_device_;		// D3DƒfƒoƒCƒX
+	D3DPRESENT_PARAMETERS	d3d_present_params_;// ƒvƒŒƒ[ƒ“ƒe[ƒVƒ‡ƒ“ƒpƒ‰ƒ[ƒ^‚ÌŠi”[
+	LPDIRECT3DSURFACE9		back_buffer_;		//ƒoƒbƒNƒoƒbƒtƒ@Ši”[—p
 	LPDIRECT3DTEXTURE9		parallax_textures_[kNumOfParallax];
-	LPDIRECT3DSURFACE9		parallax_buffers_[kNumOfParallax];	// å„è¦–ç‚¹ç”¨ã®ãƒãƒƒãƒ•ã‚¡ã‚’æ ¼ç´
+	LPDIRECT3DSURFACE9		parallax_buffers_[kNumOfParallax];	// Še‹“_—p‚Ìƒoƒbƒtƒ@‚ğŠi”[*/
 
-	LPD3DXEFFECT			effect_;
-	D3DXHANDLE				technique_;
-	D3DXHANDLE				texture_handle_[kNumOfParallax];
+	// Direct 3D 10
+	DXGI_SWAP_CHAIN_DESC	swap_desc_;
+	IDXGISwapChain*			swap_chain_;
+	ID3D10Device*			d3d_device_;
+	ID3D10RenderTargetView*	render_target_view_;
+	ID3D10Effect*			def_effect_;
+	ID3D10EffectTechnique*	def_technique_;
+	ID3D10InputLayout*		vertex_layout_;
+	ID3D10Buffer*			vertex_buffer_;
+
+	//LPD3DXEFFECT			effect_;
+	//D3DXHANDLE				technique_;
+	//D3DXHANDLE				texture_handle_[kNumOfParallax];
 	// DirectInput
-	LPDIRECTINPUT8			direct_input_;		// DirectInputã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
-	LPDIRECTINPUTDEVICE8	din_keybord_;		// ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰
-	LPDIRECTINPUTDEVICE8	din_mouse_;			// ãƒã‚¦ã‚¹
-	BYTE					key_state_[256];	// ã‚­ãƒ¼ãƒœãƒ¼ãƒˆã®çŠ¶æ…‹æ ¼ç´
-	DIMOUSESTATE2			mouse_state_;		// ãƒã‚¦ã‚¹ã®çŠ¶æ…‹
+	LPDIRECTINPUT8			direct_input_;		// DirectInputƒIƒuƒWƒFƒNƒg
+	LPDIRECTINPUTDEVICE8	din_keybord_;		// ƒL[ƒ{[ƒh
+	LPDIRECTINPUTDEVICE8	din_mouse_;			// ƒ}ƒEƒX
+	BYTE					key_state_[256];	// ƒL[ƒ{[ƒg‚Ìó‘ÔŠi”[
+	DIMOUSESTATE2			mouse_state_;		// ƒ}ƒEƒX‚Ìó‘Ô
 
 	HRESULT		InitDirect3D(HWND);
 	VOID		CleanUpDirect3D(void);
-	void		SetTextureSamplerState(D3DTEXTUREFILTERTYPE);
+	//void		SetTextureSamplerState(D3DTEXTUREFILTERTYPE);
 	HRESULT		InitDirectInput(HWND ,HINSTANCE);
 	VOID		CleanUpDirectInput(void);
 	HRESULT		SetupKeybord(HWND);
@@ -88,15 +104,16 @@ public:
 	~DXEngine(void);
 	// Direct3D
 	BOOL				CheckFullScreen(void);
-	LPDIRECT3DDEVICE9	get_d3d_device(void);
-	void				SetRender(RenderState);
+	ID3D10Device*		get_d3d_device(void);
+	/*void				SetRender(RenderState);
 	void				SetLight(LightNumber ,D3DLIGHT9);
 	void				SetCamera(CameraParam);
 	void				SetObjectMatrix(D3DXVECTOR3 ,DirectionYPR ,float);
 	void				SetViewTarget(int);
 	void				SetDefaultBuffer();
 	HRESULT				GetBufferDC( HDC* );
-	HRESULT				ReleaseBufferDC( HDC* );
+	HRESULT				ReleaseBufferDC( HDC* );*/
+	void				ClearRenderTargetView(const float[4]);
 	// DirectInput
 	void				GetInput(void);
 	BYTE*				get_keybord_state(void);

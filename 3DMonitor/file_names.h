@@ -1,5 +1,5 @@
-ï»¿// Copyright 2011 MineStudio.
-// ãƒ•ã‚¡ã‚¤ãƒ«åã®å®šç¾©ã‚’è¡Œã£ã¦ã„ãã¾ã™ã€‚
+// Copyright 2011 MineStudio.
+// ƒtƒ@ƒCƒ‹–¼‚Ì’è‹`‚ğs‚Á‚Ä‚¢‚«‚Ü‚·B
 
 #ifndef NPCA3DMONITOR__FILENAMES_H_
 #define NPCA3DMONITOR__FILENAMES_H_
@@ -7,5 +7,6 @@
 #define kFileF14X	TEXT("model\\f14.x")
 #define kFileBat	TEXT("model\\bat.x")
 #define kFilePot	TEXT("model\\pot.x")
+#define kFileDefFX	TEXT("def.fx")
 
 #endif

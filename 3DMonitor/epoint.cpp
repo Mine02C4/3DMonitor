@@ -1,5 +1,5 @@
-ï»¿// Copyright 2011 MineStudio.
-// ã‚¨ãƒ³ãƒˆãƒªãƒã‚¤ãƒ³ãƒˆã®WinMainã‚’å®šç¾©ã—ã¾ã™
+// Copyright 2011 MineStudio.
+// ƒGƒ“ƒgƒŠƒ|ƒCƒ“ƒg‚ÌWinMain‚ð’è‹`‚µ‚Ü‚·
 
 #include "chead.h"
 
@@ -21,7 +21,7 @@ int WINAPI _tWinMain(	HINSTANCE hInstance ,
 		return(E_FAIL);
 	}
 	
-	// ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒ«ãƒ¼ãƒ—
+	// ƒƒbƒZ[ƒWƒ‹[ƒv
 	win_engine->MsgLoop();
 
 	SAFE_DELETE(win_engine);

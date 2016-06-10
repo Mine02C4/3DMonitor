@@ -1,5 +1,5 @@
-﻿// Copyright 2011 MineStudio.
-// ウィンドウハンドラの制御を中心にWindowsAPI関連の対応を行います
+// Copyright 2011 MineStudio.
+// �E�B���h�E�n���h���̐���𒆐S��WindowsAPI�֘A�̑Ή����s���܂�
 
 #ifndef NPCA3DMONITOR__WINENGINE_H_
 #define NPCA3DMONITOR__WINENGINE_H_
@@ -29,7 +29,7 @@ public:
 	void		DebugRender();
 };
 
-//関数プロトタイプ
+//�֐��v���g�^�C�v
 LRESULT	CALLBACK WndProc(HWND,UINT,WPARAM,LPARAM);
 
 #endif

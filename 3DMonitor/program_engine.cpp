@@ -1,5 +1,5 @@
-ï»¿// Copyright 2011 MineStudio.
-// ProgramEngineã‚¯ãƒ©ã‚¹ã‚’å®šç¾©ã—ã¾ã™ã€‚ã“ã®ã‚¯ãƒ©ã‚¹ã¯ãƒ—ãƒ­ã‚°ãƒ©ãƒ ã®åˆ¶å¾¡ã‚’è¡Œã„ã¾ã™ã€‚
+// Copyright 2011 MineStudio.
+// ProgramEngineƒNƒ‰ƒX‚ğ’è‹`‚µ‚Ü‚·B‚±‚ÌƒNƒ‰ƒX‚ÍƒvƒƒOƒ‰ƒ€‚Ì§Œä‚ğs‚¢‚Ü‚·B
 
 #include "chead.h"
 
@@ -7,7 +7,7 @@
 
 #include "graphics_engine.h"
 
-// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
 ProgramEngine::ProgramEngine(DXEngine* tmp_dx, HRESULT* result)
 {
 	graphics_engine_	= NULL;
@@ -19,13 +19,13 @@ ProgramEngine::ProgramEngine(DXEngine* tmp_dx, HRESULT* result)
 //	GameMainEngine = new GameEngine(kV_TYPE_AIR_F14,GameMainData,DEngine);
 }
 
-//ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+//ƒfƒXƒgƒ‰ƒNƒ^
 ProgramEngine::~ProgramEngine()
 {
 	SAFE_DELETE(graphics_engine_);
 }
 
-// ã‚²ãƒ¼ãƒ ã®å‡¦ç†ã‚’è¡Œã†
+// ƒQ[ƒ€‚Ìˆ—‚ğs‚¤
 HRESULT ProgramEngine::ProcessProgram()
 {
 	switch (program_mode_) {

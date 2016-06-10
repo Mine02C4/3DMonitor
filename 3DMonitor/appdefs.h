@@ -1,60 +1,60 @@
-ï»¿// Copyright 2011 MineStudio.
-// ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã§ä½¿ç”¨ã™ã‚‹å®šç¾©(define)ã‚’ã—ã¦ã„ãã¾ã™
+// Copyright 2011 MineStudio.
+// ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚Åg—p‚·‚é’è‹`(define)‚ğ‚µ‚Ä‚¢‚«‚Ü‚·
 
 #ifndef NPCA3DMONITOR__APPDEFS_H_
 #define NPCA3DMONITOR__APPDEFS_H_
 
-#include <d3dx9.h>
+#include <d3dx10.h>
 
 // ----
-// å®šæ•°
+// ’è”
 // ----
 
-// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®åå‰
+// ƒEƒBƒ“ƒhƒE‚Ì–¼‘O
 #define kWindowTitle		TEXT("npca 3D Monitor Project")
 #define kBufferTitle		TEXT("npca 3D Buffer")
-// ã‚¨ãƒ©ãƒ¼ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®ã‚¿ã‚¤ãƒˆãƒ«
-#define	kErrorMessage		TEXT("npca 3D Monitor Project ã‚¨ãƒ©ãƒ¼")
+// ƒGƒ‰[ƒƒbƒZ[ƒW‚Ìƒ^ƒCƒgƒ‹
+#define	kErrorMessage		TEXT("npca 3D Monitor Project ƒGƒ‰[")
 
-// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®å½¢ãªã©
-#define	kWindowWidth	3840
-#define	kWindowHeight	2400
+// ƒEƒBƒ“ƒhƒE‚ÌŒ`‚È‚Ç
+#define	kWindowWidth	640
+#define	kWindowHeight	400
 #define	kWindowTop		50
 #define	kWindowLeft		50
 
-// ç”»é¢ã‚µã‚¤ã‚º
+// ‰æ–ÊƒTƒCƒY
 #define kMonitorWidth	3840
 #define kMonitorHeight	2400
 
-// 1ä¸‰æ¬¡å…ƒãƒ”ã‚¯ã‚»ãƒ«å†…ã®äºŒæ¬¡å…ƒãƒ”ã‚¯ã‚»ãƒ«ã®æ•°
+// 1OŸŒ³ƒsƒNƒZƒ‹“à‚Ì“ñŸŒ³ƒsƒNƒZƒ‹‚Ì”
 #define kNumOfHorizontal2DPixel	6
 #define kNumOfVertical2DPixel	6
 
-// ä¸‰æ¬¡å…ƒãƒ”ã‚¯ã‚»ãƒ«ã®ç”»ç´ æ•°
+// OŸŒ³ƒsƒNƒZƒ‹‚Ì‰æ‘f”
 #define kWidth3DPixel	(kMonitorWidth/kNumOfHorizontal2DPixel)
 #define kHeight3DPixel	(kMonitorHeight/kNumOfVertical2DPixel)
 
-// è¦–å·®æ•°
+// ‹·”
 #define kNumOfParallax	(kNumOfHorizontal2DPixel*kNumOfVertical2DPixel)
 
-// ä¸€è¦–å·®ã®è¦–é‡è§’(DEG)
+// ˆê‹·‚Ì‹–ìŠp(DEG)
 #define kAnglePitch		0.63
-// ä¸Šè¨˜ãƒ©ã‚¸ã‚¢ãƒ³å€¤
+// ã‹Lƒ‰ƒWƒAƒ“’l
 #define kRadAnglePitch	(D3DXToRadian(kAnglePitch))
 
-// ãƒ•ã‚¡ã‚¤ãƒ«åã®æœ€é•·
+// ƒtƒ@ƒCƒ‹–¼‚ÌÅ’·
 #define	kStringLength	512
 
-// 10/1000msec. Sleepã™ã‚‹æ™‚é–“
+// 10/1000msec. Sleep‚·‚éŠÔ
 #define	kSleep			10
 
 #define	kTimerId		1
 
-#define	kSetFps			12
+#define	kSetFps			20
 #define	kTimerLap		(1000/kSetFps)
 
 // ------
-// ãƒã‚¯ãƒ­
+// ƒ}ƒNƒ
 // ------
 
 #define SAFE_DELETE(me)			{ if(me){ delete (me);		( me )=NULL; } }

@@ -1,5 +1,5 @@
-ï»¿// Copyright 2011 MineStudio.
-// ObjectBoxã‚¯ãƒ©ã‚¹ã®å®šç¾©ã‚’è¡Œã„ã¾ã™ã€‚
+// Copyright 2011 MineStudio.
+// ObjectBoxƒNƒ‰ƒX‚Ì’è‹`‚ðs‚¢‚Ü‚·B
 
 #include "object_box.h"
 
@@ -7,7 +7,7 @@
 #include "dx_engine.h"
 #include "appdefs.h"
 
-// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
 ObjectBox::ObjectBox(ModelData* model) {
 	model_		= model;
 	position_	= D3DXVECTOR3(0.0f,0.0f,0.0f);
@@ -27,19 +27,19 @@ ObjectBox::ObjectBox(ModelData* model, D3DXVECTOR3 position, DirectionYPR direct
 	scale_		= 1.0f;
 }
 
-// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+// ƒfƒXƒgƒ‰ƒNƒ^
 ObjectBox::~ObjectBox()
 {
 }
 
-// ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°
+// ƒŒƒ“ƒ_ƒŠƒ“ƒO
 void ObjectBox::Render(DXEngine* dx_engine)
 {
 	dx_engine->SetObjectMatrix(position_, direction_, scale_*(model_->get_scale_()));
 	model_->RenderModel(dx_engine->get_d3d_device());
 }
 
-// ãƒ†ã‚¹ãƒˆã‚¹ãƒ”ãƒ³
+// ƒeƒXƒgƒXƒsƒ“
 void ObjectBox::TestSpin()
 {
 	direction_.Pitch += D3DX_PI/kSetFps/5;

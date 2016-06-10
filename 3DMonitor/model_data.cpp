@@ -1,11 +1,11 @@
-ï»¿// Copyright 2011 MineStudio.
-// ModelDataã‚¯ãƒ©ã‚¹ã®å®šç¾©ã‚’è¡Œã„ã¾ã™ã€‚
+// Copyright 2011 MineStudio.
+// ModelDataƒNƒ‰ƒX‚Ì’è‹`‚ğs‚¢‚Ü‚·B
 
 #include "model_data.h"
 
 #include "appdefs.h"
 
-//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+//ƒRƒ“ƒXƒgƒ‰ƒNƒ^
 ModelData::ModelData(const TCHAR* ModelName,int* error_flag,float scale, LPDIRECT3DDEVICE9 d3d_device)
 {
 	InitModel();
@@ -16,48 +16,48 @@ ModelData::ModelData(const TCHAR* ModelName,int* error_flag,float scale, LPDIREC
 	scale_	= scale;
 }
 
-//ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+//ƒfƒXƒgƒ‰ƒNƒ^
 ModelData::~ModelData(void)
 {
-	// ãƒ¡ãƒƒã‚·ãƒ¥ãƒãƒ†ãƒªã‚¢ãƒ«ã®è§£æ”¾
+	// ƒƒbƒVƒ…ƒ}ƒeƒŠƒAƒ‹‚Ì‰ğ•ú
 	SAFE_DELETE_ARRAY(materials_);
 
-	// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®è§£æ”¾
+	// ƒeƒNƒXƒ`ƒƒ‚Ì‰ğ•ú
 	if( textures_ )
 	{
 		for(DWORD j0 = 0; j0 < num_materials_ ; j0++ ){ SAFE_RELEASE( textures_[j0] );}
 		SAFE_DELETE_ARRAY( textures_ );
 	}
 
-	/*ãƒ¡ãƒƒã‚·ãƒ¥ã®é–‹æ”¾*/
+	/*ƒƒbƒVƒ…‚ÌŠJ•ú*/
 	SAFE_RELEASE( mesh_ );
 }
 
-//Xãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰ã®ãƒ¢ãƒ‡ãƒ«ãƒ‡ãƒ¼ã‚¿ã®èª­ã¿è¾¼ã¿
+//Xƒtƒ@ƒCƒ‹‚©‚ç‚Ìƒ‚ƒfƒ‹ƒf[ƒ^‚Ì“Ç‚İ‚İ
 HRESULT ModelData::LoadFromXFileModel(LPCTSTR file_name, LPDIRECT3DDEVICE9 d3d_device)
 {
-	// ä¸€æ™‚ãƒãƒƒãƒ•ã‚¡ç”¨
+	// ˆêƒoƒbƒtƒ@—p
 	LPD3DXBUFFER pD3DXMtrlBuffer;
 
-	// Xãƒ•ã‚¡ã‚¤ãƒ«ã®èª­ã¿è¾¼ã¿ã€‚
+	// Xƒtƒ@ƒCƒ‹‚Ì“Ç‚İ‚İB
 	if(FAILED(D3DXLoadMeshFromX(file_name, D3DXMESH_SYSTEMMEM,d3d_device, NULL,&pD3DXMtrlBuffer,NULL,&num_materials_,&mesh_))) {
 		TCHAR caution_string[kStringLength];
-		wsprintf(caution_string,TEXT("Xãƒ•ã‚¡ã‚¤ãƒ«ã€%sã€ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“ã§ã—ãŸã€‚"),file_name);
+		wsprintf(caution_string,TEXT("Xƒtƒ@ƒCƒ‹w%sx‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ‚Å‚µ‚½B"),file_name);
 		MessageBox(NULL,caution_string,kWindowTitle,MB_OK);
 		return(E_FAIL);
 	}
 
-	// pD3DXMtrlBufferã‹ã‚‰ã€ãƒãƒ†ãƒªã‚¢ãƒ«ã‚„ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®åç§°ãªã©ã®æƒ…å ±ã‚’å–å¾—ã™ã‚‹ã€‚
+	// pD3DXMtrlBuffer‚©‚çAƒ}ƒeƒŠƒAƒ‹‚âƒeƒNƒXƒ`ƒƒ‚Ì–¼Ì‚È‚Ç‚Ìî•ñ‚ğæ“¾‚·‚éB
 	D3DXMATERIAL* d3dx_materials	= (D3DXMATERIAL*)pD3DXMtrlBuffer->GetBufferPointer();
 	materials_	= new D3DMATERIAL9[num_materials_];
 	textures_	= new LPDIRECT3DTEXTURE9[num_materials_];
 
 	for(DWORD i0=0; i0 < num_materials_ ; i0++ )
 	{
-		// è³ªæ„Ÿï¼ˆmaterialï¼‰ã®ã‚³ãƒ”ãƒ¼
+		// ¿Š´imaterialj‚ÌƒRƒs[
 		materials_[i0] = d3dx_materials[i0].MatD3D;
 
-		// è³ªæ„Ÿï¼ˆmaterialï¼‰ã«ç’°å¢ƒå…‰ã‚’è¨­å®šã™ã‚‹ï¼ˆD3DXãŒä½•ã‚‚ã—ãªã„ãŸã‚ï¼‰
+		// ¿Š´imaterialj‚ÉŠÂ‹«Œõ‚ğİ’è‚·‚éiD3DX‚ª‰½‚à‚µ‚È‚¢‚½‚ßj
 		materials_[i0].Ambient = materials_[i0].Diffuse;
 
 		textures_[i0] = NULL;
@@ -67,20 +67,20 @@ HRESULT ModelData::LoadFromXFileModel(LPCTSTR file_name, LPDIRECT3DDEVICE9 d3d_d
 			{
 				TCHAR caution_string[kStringLength];
 
-				wsprintf(caution_string,TEXT("Xãƒ•ã‚¡ã‚¤ãƒ«ã€%sã€ã§æŒ‡å®šã•ã‚ŒãŸãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒãƒƒãƒ—ãƒ•ã‚¡ã‚¤ãƒ«ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“ã§ã—ãŸã€‚"),file_name);
+				wsprintf(caution_string,TEXT("Xƒtƒ@ƒCƒ‹w%sx‚Åw’è‚³‚ê‚½ƒeƒNƒXƒ`ƒƒƒ}ƒbƒvƒtƒ@ƒCƒ‹‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ‚Å‚µ‚½B"),file_name);
 				MessageBox(NULL,caution_string,kWindowTitle,MB_OK);
 				return( E_FAIL );
 			}
 		}
 	}
 
-	// è³ªæ„Ÿï¼ˆmaterialï¼‰ãƒãƒƒãƒ•ã‚¡ã®é–‹æ”¾ã€‚
+	// ¿Š´imaterialjƒoƒbƒtƒ@‚ÌŠJ•úB
 	pD3DXMtrlBuffer->Release();
 
 	return(S_OK);
 }
 
-//ç”»åƒãƒ•ã‚¡ã‚¤ãƒ«ã‚’ãƒ†ã‚¯ã‚¹ãƒãƒ£ã¨ã—ã¦èª­ã¿è¾¼ã‚€
+//‰æ‘œƒtƒ@ƒCƒ‹‚ğƒeƒNƒXƒ`ƒƒ‚Æ‚µ‚Ä“Ç‚İ‚Ş
 HRESULT ModelData::LoadTexture(LPSTR file_name, LPDIRECT3DTEXTURE9* texture,LPDIRECT3DDEVICE9 d3d_device)
 {
 	TCHAR tmp_name[255];
@@ -92,7 +92,7 @@ HRESULT ModelData::LoadTexture(LPSTR file_name, LPDIRECT3DTEXTURE9* texture,LPDI
 #else
 	*tmp_name = *file_name;
 #endif
-	// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®ç”Ÿæˆ
+	// ƒeƒNƒXƒ`ƒƒ‚Ì¶¬
 	if(FAILED(D3DXCreateTextureFromFile(d3d_device,tmp_name,texture)))
 	{
 		return(E_FAIL);
@@ -101,7 +101,7 @@ HRESULT ModelData::LoadTexture(LPSTR file_name, LPDIRECT3DTEXTURE9* texture,LPDI
 	return( S_OK );
 }
 
-//ãƒ¢ãƒ‡ãƒ«ã®åˆæœŸåŒ–
+//ƒ‚ƒfƒ‹‚Ì‰Šú‰»
 void ModelData::InitModel(void)
 {
 	mesh_			= NULL;
@@ -110,22 +110,22 @@ void ModelData::InitModel(void)
 	num_materials_	= 0;
 }
 
-// ãƒ¡ãƒƒã‚·ãƒ¥ã‚’ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°
+// ƒƒbƒVƒ…‚ğƒŒƒ“ƒ_ƒŠƒ“ƒO
 VOID ModelData::RenderModel(LPDIRECT3DDEVICE9 D3DDevice)
 {
-	// ãƒãƒ†ãƒªã‚¢ãƒ«ã®æ•°ã ã‘ãƒ«ãƒ¼ãƒ—
+	// ƒ}ƒeƒŠƒAƒ‹‚Ì”‚¾‚¯ƒ‹[ƒv
 	for(DWORD i=0;i<num_materials_;i++)
 	{
-		// ã‚µãƒ–ã‚»ãƒƒãƒˆã«ãƒãƒ†ãƒªã‚¢ãƒ«ã¨ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’è¨­å®šã€‚
+		// ƒTƒuƒZƒbƒg‚Éƒ}ƒeƒŠƒAƒ‹‚ÆƒeƒNƒXƒ`ƒƒ‚ğİ’èB
 		D3DDevice->SetMaterial(&materials_[i]);
 		D3DDevice->SetTexture(0,textures_[i]);
 		
-		// ãƒ¡ãƒƒã‚·ãƒ¥ãƒ»ã‚µãƒ–ã‚»ãƒƒãƒˆã®æç”»ã€‚
+		// ƒƒbƒVƒ…EƒTƒuƒZƒbƒg‚Ì•`‰æB
 		mesh_->DrawSubset(i);
 	}
 }
 
-// æ‹¡å¤§ç‡ã‚’å–å¾—
+// Šg‘å—¦‚ğæ“¾
 float ModelData::get_scale_()
 {
 	return scale_;

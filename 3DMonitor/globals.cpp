@@ -1,5 +1,5 @@
-﻿// Copyright 2011 MineStudio.
-// グローバル変数をextern無しで宣言するためのファイル
+// Copyright 2011 MineStudio.
+// �O���[�o���ϐ���extern�����Ő錾���邽�߂̃t�@�C��
 
 #define ___GLOBAL_DEFINE
 #include "globals.h"

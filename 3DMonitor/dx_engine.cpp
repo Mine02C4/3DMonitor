@@ -1,5 +1,5 @@
-ï»¿// Copyright 2011 MineStudio.
-// DxEngineã‚¯ãƒ©ã‚¹ã®å®šç¾©ã‚’è¡Œã„ã¾ã™ã€‚
+// Copyright 2011 MineStudio.
+// DxEngineƒNƒ‰ƒX‚Ì’è‹`‚ğs‚¢‚Ü‚·B
 
 #include "chead.h"
 
@@ -9,134 +9,147 @@
 
 #include <windows.h>
 
-// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
-DXEngine::DXEngine(HWND buffer_window,BOOL boolFullScreen,WNDCLASSEX buffer_window_class,HRESULT* result,HINSTANCE hInstance, HWND main_window)
+#include "file_names.h"
+
+// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+DXEngine::DXEngine(HWND direct_window,BOOL boolFullScreen,WNDCLASSEX buffer_window_class,HRESULT* result,HINSTANCE hInstance, HWND main_window)
 {
-	// å¤‰æ•°åˆæœŸåŒ–
-	d3d_			= NULL;
-	d3d_device_		= NULL;
-	direct_input_	= NULL;
-	din_keybord_	= NULL;
-	din_mouse_		= NULL;
+	swap_chain_			= NULL;
+	d3d_device_			= NULL;
+	render_target_view_	= NULL;
+	direct_input_		= NULL;
+	din_keybord_		= NULL;
+	din_mouse_			= NULL;
 	ZeroMemory(&mouse_state_,sizeof(DIMOUSESTATE2));
 	ZeroMemory(key_state_,sizeof(key_state_));
-	// ãƒ•ãƒ«ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ã®è¨­å®š
+	// ƒtƒ‹ƒXƒNƒŠ[ƒ“‚Ìİ’è
 	full_screen_flag_	= boolFullScreen;
-	/*
-	â€»æ³¨æ„ã€€ã“ã®å€¤ã‚’TRUEã«ã™ã‚‹ã¨ãƒ•ãƒ«ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ãƒ¢ãƒ¼ãƒ‰ã¨ã—ã¦ãƒ“ãƒ«ãƒˆã•ã‚Œã€ãƒã‚°ãŒç™ºç”Ÿã—ãŸå ´åˆã«ç”»é¢ãŒå é ˜ã•ã‚Œã¦ã„ã¦åœæ­¢ã§ããªããªã‚Šå ´åˆãŒã‚ã‚Šã¾ã™ã€‚
-	ãƒã‚°ã‚’å®Œå…¨ã«ä¿®æ­£ã—ã¦ã‹ã‚‰ã“ã®å€¤ã‚’TRUEã«ã—ã¦ãã ã•ã„ã€‚
-	*/
-	// Direct3Dã‚ˆã‚Šå…ˆã«åˆæœŸåŒ–ã™ã‚‹ã¨ã€ãƒ•ãƒ«ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ãƒ¢ãƒ¼ãƒ‰ã®ã¨ãã‚¨ãƒ©ãƒ¼ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ãŒè¦‹ãˆãªããªã‚‹ãŸã‚
-	/*if(FAILED(InitDirectInput(main_window,hInstance)))
+
+	// Direct3D‚Ì‰Šú‰»
+	if(FAILED(InitDirect3D(direct_window)))
 	{
-		//ZeroMemory(DInkey_state_,sizeof(DInkey_state_)); //å¿µã®ãŸã‚ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ãƒãƒƒãƒ•ã‚¡ã‚’åˆæœŸåŒ–
-		MessageBox( NULL, TEXT("direct_input_ã®åˆæœŸåŒ–ã«å¤±æ•—ã—ã¾ã—ãŸã€‚"), kErrorMessage, MB_OK|MB_ICONHAND );
-		*result = E_FAIL;
-		return;
-	}*/
-	// Direct3Dã®åˆæœŸåŒ–
-	if(FAILED(InitDirect3D(buffer_window)))
-	{
-		MessageBox( NULL, TEXT("DirectXã®åˆæœŸåŒ–ã«å¤±æ•—ã—ã¾ã—ãŸã€‚"), kErrorMessage, MB_OK|MB_ICONHAND );
+		MessageBox( NULL, TEXT("DirectX‚Ì‰Šú‰»‚É¸”s‚µ‚Ü‚µ‚½B"), kErrorMessage, MB_OK|MB_ICONHAND );
 		*result = E_FAIL;
 		return;
 	}
 	*result = S_OK;
 }
 
-// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+// ƒfƒXƒgƒ‰ƒNƒ^
 DXEngine::~DXEngine()
 {
 	CleanUpDirectInput();
 	CleanUpDirect3D();
 }
 
-// Direct3Dã®åˆæœŸåŒ–
+// Direct3D‚Ì‰Šú‰»
 HRESULT DXEngine::InitDirect3D(HWND hWnd)
 {
-	effect_		= NULL;
-	technique_	= NULL;
-	for(int i=0;i<kNumOfParallax;i++) {
+//	effect_		= NULL;
+//	technique_	= NULL;
+/*	for(int i=0;i<kNumOfParallax;i++) {
 		parallax_buffers_[i] = NULL;
+	}*/
+
+	// •Ï”‰Šú‰»
+	ZeroMemory(&swap_desc_, sizeof(swap_desc_));
+	swap_chain_		= NULL;
+	def_technique_	= NULL;
+	def_effect_		= NULL;
+
+	// ƒXƒƒbƒvƒ`ƒF[ƒ“‚Ìİ’è
+	swap_desc_.BufferCount			= 1;
+	swap_desc_.BufferDesc.Width		= kWindowWidth;
+	swap_desc_.BufferDesc.Height	= kWindowHeight;
+	swap_desc_.BufferDesc.Format	= DXGI_FORMAT_R8G8B8A8_UNORM;
+	swap_desc_.BufferDesc.RefreshRate.Numerator		= kSetFps;
+	swap_desc_.BufferDesc.RefreshRate.Denominator	= 1;
+	swap_desc_.BufferUsage			= DXGI_USAGE_RENDER_TARGET_OUTPUT;
+	swap_desc_.OutputWindow			= hWnd;
+	swap_desc_.SampleDesc.Count		= 1;
+	swap_desc_.SampleDesc.Quality	= 0;
+	swap_desc_.Windowed				= TRUE;
+	
+	if(FAILED(D3D10CreateDeviceAndSwapChain(NULL, D3D10_DRIVER_TYPE_REFERENCE, NULL, 0,
+		D3D10_SDK_VERSION, &swap_desc_, &swap_chain_, &d3d_device_))) {
+			return E_FAIL;
 	}
 
-	// D3Dã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ç”Ÿæˆã€‚
-	if(NULL == (d3d_ = Direct3DCreate9(D3D_SDK_VERSION))){return(E_FAIL);}
-	// D3Dãƒ‡ã‚£ãƒã‚¤ã‚¹ã‚’ç”Ÿæˆã™ã‚‹ãŸã‚ã®æ§‹é€ ä½“ã‚’è¨­å®šã™ã‚‹ã€‚
-	ZeroMemory(&d3d_present_params_,sizeof(D3DPRESENT_PARAMETERS));
+	ID3D10Texture2D* back_buffer;
+	if(FAILED(swap_chain_->GetBuffer(0, __uuidof(ID3D10Texture2D), (LPVOID*)&back_buffer))) {
+		return E_FAIL;
+	}
+	HRESULT hr = d3d_device_->CreateRenderTargetView(back_buffer, NULL, &render_target_view_);
+	back_buffer->Release();
+	if(FAILED(hr)) {
+		return hr;
+	}
+	d3d_device_->OMSetRenderTargets(1, &render_target_view_, NULL);
 
-	//ç¾åœ¨ã®ãƒ—ãƒ©ã‚¤ãƒãƒªãƒ‡ã‚£ã‚¹ãƒ—ãƒ¬ã‚¤ã‚¢ãƒ€ãƒ—ã‚¿ã®ãƒ¢ãƒ¼ãƒ‰ã‚’å–å¾—ã™ã‚‹
-	D3DDISPLAYMODE aDisplayMode;		//ãƒ‡ã‚£ã‚¹ãƒ—ãƒ¬ã‚¤ãƒ¢ãƒ¼ãƒ‰ã®æƒ…å ±ã‚’åã‚ã‚‹ãŸã‚
-	if(FAILED( d3d_->GetAdapterDisplayMode( D3DADAPTER_DEFAULT , &aDisplayMode )))
+	D3D10_VIEWPORT	view_port;
+	view_port.Width		= kMonitorWidth;
+	view_port.Height	= kMonitorHeight;
+	view_port.MinDepth	= 0.0f;
+	view_port.MaxDepth	= 1.0f;
+	view_port.TopLeftX	= 0;
+	view_port.TopLeftY	= 0;
+	d3d_device_->RSSetViewports(1,&view_port);
+
+	// Create the effect
+    DWORD shader_flags = D3D10_SHADER_ENABLE_STRICTNESS;
+#if defined(DEBUG) || defined(_DEBUG)
+	shader_flags |= D3D10_SHADER_DEBUG;
+#endif
+	if(FAILED(D3DX10CreateEffectFromFile(kFileDefFX, NULL, NULL, "fx_4_0", shader_flags, 0,
+											d3d_device_, NULL, NULL, &def_effect_, NULL, NULL)))
 	{
-		MessageBox(NULL,TEXT("ãƒ‡ã‚£ã‚¹ãƒ—ãƒ¬ã‚¤ãƒ¢ãƒ¼ãƒ‰ã®å–å¾—ã«å¤±æ•—ã—ã¾ã—ãŸ"),kWindowTitle,MB_OK | MB_ICONSTOP);
-		return( E_FAIL ); 
-	}
-	// ãƒ—ãƒ¬ã‚¼ãƒ³ãƒ†ãƒ¼ã‚·ãƒ§ãƒ³ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®è¨­å®š
-	//if(full_screen_flag_)
-	//{
-		//d3d_present_params_.BackBufferHeight			= aDisplayMode.Height;			// ãƒãƒƒã‚¯ãƒãƒƒãƒ•ã‚¡ã®é«˜ã•
-		//d3d_present_params_.BackBufferWidth				= aDisplayMode.Width;			// ãƒãƒƒã‚¯ãƒãƒƒãƒ•ã‚¡ã®å¹…
-		d3d_present_params_.BackBufferHeight			= kMonitorHeight;			// ãƒãƒƒã‚¯ãƒãƒƒãƒ•ã‚¡ã®é«˜ã•
-		d3d_present_params_.BackBufferWidth				= kMonitorWidth;			// ãƒãƒƒã‚¯ãƒãƒƒãƒ•ã‚¡ã®å¹…
-
-		d3d_present_params_.BackBufferFormat			= D3DFMT_X8R8G8B8;			// ãƒãƒƒã‚¯ãƒãƒƒãƒ•ã‚¡ã®ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
-	//	d3d_present_params_.Windowed					= FALSE;	
-		// ãƒ•ãƒ«ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ãƒ¢ãƒ¼ãƒ‰
-	//}
-	//else
-	//{
-	//	d3d_present_params_.BackBufferFormat			= D3DFMT_UNKNOWN;				// ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã¯ä»Šã®ç”»é¢ãƒ¢ãƒ¼ãƒ‰ã«å¾“ã†
-		d3d_present_params_.Windowed					= TRUE;							// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ¢ãƒ¼ãƒ‰
-	//}
-	//å…±é€šãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
-	d3d_present_params_.BackBufferCount				= 1;							// ãƒãƒƒã‚¯ãƒãƒƒãƒ•ã‚¡ã®æ•°
-	d3d_present_params_.MultiSampleType				= D3DMULTISAMPLE_NONE;			// ãƒãƒ«ãƒã‚µãƒ³ãƒ—ãƒªãƒ³ã‚°ã¯è¡Œã‚ãªã„
-	d3d_present_params_.MultiSampleQuality			= 0;							// ãƒãƒ«ãƒã‚µãƒ³ãƒ—ãƒªãƒ³ã‚°ã¯è¡Œã‚ãªã„ã®ã§0
-	d3d_present_params_.SwapEffect					= D3DSWAPEFFECT_DISCARD;		// Direct3Dã«ã‚¹ãƒ¯ãƒƒãƒ—ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚’ä»»ã›ã‚‹
-	d3d_present_params_.EnableAutoDepthStencil		= TRUE;							// Direct3Dã«æ·±åº¦ãƒãƒƒãƒ•ã‚¡ã®ç®¡ç†ã‚’ä»»ã›ã‚‹
-	d3d_present_params_.AutoDepthStencilFormat		= D3DFMT_D16;					// æ·±åº¦ãƒãƒƒãƒ•ã‚¡ã®ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆï¼ˆé€šå¸¸ã¯ã“ã®å€¤ã§å•é¡Œãªã„ï¼‰
-	d3d_present_params_.hDeviceWindow				= hWnd;							// ã‚«ãƒãƒ¼ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ï¼ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã®ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦
-	d3d_present_params_.Flags						= D3DPRESENTFLAG_LOCKABLE_BACKBUFFER;
-	d3d_present_params_.FullScreen_RefreshRateInHz	= D3DPRESENT_RATE_DEFAULT;		// ä»Šã®ãƒªãƒ•ãƒ¬ãƒƒã‚·ãƒ¥ãƒ¬ãƒ¼ãƒˆã‚’ãã®ã¾ã¾ä½¿ã†
-	d3d_present_params_.PresentationInterval		= D3DPRESENT_INTERVAL_DEFAULT;	// ãƒ¢ãƒ‹ã‚¿ã®å‚ç›´å›å¸°ã‚’å¾…ã¤
-
-	// Direct3Dãƒ‡ãƒã‚¤ã‚¹ã®ä½¿ç”¨ã®å¯å¦ã‚’ç¢ºèª
-	if(FAILED(d3d_->CheckDeviceType(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, aDisplayMode.Format, D3DFMT_X8R8G8B8, TRUE))) {
-		MessageBox(NULL,TEXT("Direct3Dã‚’åˆæœŸåŒ–ã™ã‚‹æ¡ä»¶ã‚’æº€ãŸã—ã¦ã„ãªã„ã§ã™ã€‚"),kWindowTitle,MB_OK | MB_ICONSTOP);
+		MessageBox( NULL, TEXT("The FX file cannot be located.  Please run this executable from the directory that contains the FX file."), kErrorMessage, MB_OK);
 		return E_FAIL;
 	}
 
-	// D3Dãƒ‡ã‚£ãƒã‚¤ã‚¹ã®ç”Ÿæˆ
-	// é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ï¼†ãƒ”ã‚¯ã‚»ãƒ«ã‚·ã‚§ãƒ¼ãƒ€
-	if( FAILED( d3d_->CreateDevice( D3DADAPTER_DEFAULT,D3DDEVTYPE_HAL, hWnd,
-										D3DCREATE_HARDWARE_VERTEXPROCESSING,&d3d_present_params_, &d3d_device_ ) ) )
-	{
-		// å¤±æ•—ã—ãŸã‚‰é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ã®ã¿
-		// ãªãŠã€ä»Šå›ã®ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ãƒˆã§ã¯ã“ã‚Œä»¥é™ã¯ç„¡æ„å‘³
-		if( FAILED( d3d_->CreateDevice( D3DADAPTER_DEFAULT,D3DDEVTYPE_HAL, hWnd,
-											D3DCREATE_SOFTWARE_VERTEXPROCESSING,&d3d_present_params_, &d3d_device_ ) ) )
-		{
-			// ãã‚Œã§ã‚‚ãƒ€ãƒ¡ãªã‚‰ã€REFã§ã‚„ã£ã¦ã¿ã‚‹
-			if( FAILED( d3d_->CreateDevice( D3DADAPTER_DEFAULT,D3DDEVTYPE_REF, hWnd,
-												D3DCREATE_SOFTWARE_VERTEXPROCESSING,&d3d_present_params_, &d3d_device_ ) ) )
-			{
-				// ãƒ€ãƒ¡ãªã‚‰è«¦ã‚
-				MessageBox(NULL,TEXT("Direct3Dã‚’åˆæœŸåŒ–ã§ãã¾ã›ã‚“ã§ã—ãŸ"),kWindowTitle,MB_OK | MB_ICONSTOP);
-				return( E_FAIL ); 
-			} else {
-				MessageBox(NULL,TEXT("å¯¾å¿œã—ã¦ãªã„ãŸã‚ãŸã‚ãƒ”ã‚¯ã‚»ãƒ«ã‚·ã‚§ãƒ¼ãƒ€ã¨é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ã¯å‹•ãã¾ã›ã‚“"),kWindowTitle,MB_OK | MB_ICONSTOP);
-			}
-		} else {
-			MessageBox(NULL,TEXT("å¯¾å¿œã—ã¦ãªã„ãŸã‚ãŸã‚ãƒ”ã‚¯ã‚»ãƒ«ã‚·ã‚§ãƒ¼ãƒ€ã¯å‹•ãã¾ã›ã‚“"),kWindowTitle,MB_OK | MB_ICONSTOP);
-		}
-	}
-	// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚¹ãƒ†ãƒ¼ã‚¸ã‚¹ãƒ†ãƒ¼ãƒˆã®è¨­å®š
-	d3d_device_->SetTextureStageState( 0 , D3DTSS_COLORARG1,	D3DTA_TEXTURE );	// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®è‰²ã‚’ä½¿ç”¨
-	d3d_device_->SetTextureStageState( 0 , D3DTSS_COLORARG2,	D3DTA_DIFFUSE );	// é ‚ç‚¹ã®è‰²ã‚’ä½¿ç”¨
-	d3d_device_->SetTextureStageState( 0 , D3DTSS_COLOROP,		D3DTOP_MODULATE );	// ä¹—ç®—ã™ã‚‹
+	// Obtain the technique
+	def_technique_ = def_effect_->GetTechniqueByName("Render");
 
-	LPD3DXBUFFER err = NULL;
+	D3D10_INPUT_ELEMENT_DESC layout[] = {
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D10_INPUT_PER_VERTEX_DATA, 0 },
+	};
+
+	UINT num_elements = sizeof( layout ) / sizeof( layout[0] );
+
+	D3D10_PASS_DESC pass_desc;
+	def_technique_->GetPassByIndex(0)->GetDesc(&pass_desc);
+	if(FAILED(d3d_device_->CreateInputLayout( layout, num_elements, pass_desc.pIAInputSignature,
+											pass_desc.IAInputSignatureSize, &vertex_layout_ )))
+		return E_FAIL;
+
+	d3d_device_->IASetInputLayout( vertex_layout_ );
+
+	// Create vertex buffer
+	SimpleVertex vertices[] =
+	{
+		D3DXVECTOR3( 0.0f, 0.5f, 0.5f ),
+		D3DXVECTOR3( 0.5f, -0.5f, 0.5f ),
+		D3DXVECTOR3( -0.5f, -0.5f, 0.5f ),
+	};
+	D3D10_BUFFER_DESC bd;
+	bd.Usage = D3D10_USAGE_DEFAULT;
+	bd.ByteWidth = sizeof( SimpleVertex ) * 3;
+	bd.BindFlags = D3D10_BIND_VERTEX_BUFFER;
+	bd.CPUAccessFlags = 0;
+	bd.MiscFlags = 0;
+	D3D10_SUBRESOURCE_DATA InitData;
+	InitData.pSysMem = vertices;
+	if(FAILED(d3d_device_->CreateBuffer(&bd, &InitData, &vertex_buffer_)))
+		return E_FAIL;
+
+	UINT stride = sizeof(SimpleVertex);
+	UINT offset = 0;
+	d3d_device_->IASetVertexBuffers( 0, 1, &vertex_buffer_, &stride, &offset );
+
+	// Set primitive topology
+	d3d_device_->IASetPrimitiveTopology( D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
+
+/*	LPD3DXBUFFER err = NULL;
 	if(FAILED(D3DXCreateEffectFromFile(d3d_device_, TEXT("hlsl.fx"), NULL, NULL, 0, NULL, &effect_, &err))) {
 		TCHAR error_message[1000];
 #ifdef UNICODE
@@ -153,9 +166,9 @@ HRESULT DXEngine::InitDirect3D(HWND hWnd)
 	technique_ = effect_->GetTechniqueByName("P0");
 	SAFE_RELEASE(err);
 
-	// ãƒãƒƒã‚¯ãƒãƒƒãƒ•ã‚¡ã‚’å–å¾—
+	// ƒoƒbƒNƒoƒbƒtƒ@‚ğæ“¾
 	d3d_device_->GetBackBuffer(0, 0, D3DBACKBUFFER_TYPE_MONO, &back_buffer_);
-	// å„è¦–ç‚¹ç”¨ã®ãƒãƒƒãƒ•ã‚¡ã‚’ç”¨æ„
+	// Še‹“_—p‚Ìƒoƒbƒtƒ@‚ğ—pˆÓ
 	for(int i=0;i<kNumOfParallax;i++) {
 		d3d_device_->CreateTexture(kWidth3DPixel, kHeight3DPixel, 1,D3DUSAGE_DYNAMIC, D3DFMT_X8R8G8B8, D3DPOOL_DEFAULT, &parallax_textures_[i],NULL);
 		parallax_textures_[i]->GetSurfaceLevel(0,&parallax_buffers_[i]);
@@ -164,315 +177,323 @@ HRESULT DXEngine::InitDirect3D(HWND hWnd)
 		sprintf_s(value_name,"tex%d",i);
 		texture_handle_[i] = effect_->GetParameterByName(NULL,(LPCSTR)value_name);
 		//effect_->SetTexture(,parallax_textures_[i]);
-	}
+	}*/
 
 	return ( S_OK );
 }
 
-// D3Dã®å¾Œå§‹æœ«
+// D3D‚ÌŒãn––
 VOID DXEngine::CleanUpDirect3D()
 {
-	// ã‚µãƒ¼ãƒ•ã‚§ã‚¤ãƒ«ã®è§£æ”¾
-	for(int i=0;i<kNumOfParallax;i++) {
+	// ƒT[ƒtƒFƒCƒX‚Ì‰ğ•ú
+/*	for(int i=0;i<kNumOfParallax;i++) {
 		SAFE_RELEASE(parallax_buffers_[i]);
-	}
+	}*/
+	if(d3d_device_)
+		d3d_device_->ClearState();
 
-	// DirectXãƒ‡ã‚£ãƒã‚¤ã‚¹ãªã©ã®è§£æ”¾	
+	// DirectXƒfƒBƒoƒCƒX‚È‚Ç‚Ì‰ğ•ú	
+	SAFE_RELEASE(render_target_view_);
+	SAFE_RELEASE(swap_chain_);
 	SAFE_RELEASE(d3d_device_);
-	SAFE_RELEASE(d3d_);
 }
 
-// ãƒ•ãƒ«ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ã‹ã©ã†ã‹ã‚’è¿”ã™
+// ƒtƒ‹ƒXƒNƒŠ[ƒ“‚©‚Ç‚¤‚©‚ğ•Ô‚·
 BOOL DXEngine::CheckFullScreen()
 {
 	return full_screen_flag_;
 }
 
-// Direct3Dãƒ‡ãƒã‚¤ã‚¹ã‚’è¿”ã—ã¾ã™
-LPDIRECT3DDEVICE9 DXEngine::get_d3d_device()
+// Direct3DƒfƒoƒCƒX‚ğ•Ô‚µ‚Ü‚·
+ID3D10Device* DXEngine::get_d3d_device()
 {
 	return d3d_device_;
 }
 
-// ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã®è¨­å®š
-void DXEngine::SetRender(RenderState RState)
-{
-	switch(RState)
-	{
-	case kRenderStateNormal:
-		// ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¹ãƒ†ãƒ¼ãƒˆã®è¨­å®š
-		d3d_device_->SetRenderState( D3DRS_CULLMODE,			D3DCULL_NONE	);		// ãƒãƒªã‚´ãƒ³ã®è£è¡¨ãƒã‚§ãƒƒã‚¯ã‚’ã—ãªã„
-		d3d_device_->SetRenderState( D3DRS_ALPHABLENDENABLE,	FALSE			);		// Î±ãƒ–ãƒ¬ãƒ³ãƒ‡ã‚£ãƒ³ã‚°ç„¡åŠ¹
-		d3d_device_->SetRenderState( D3DRS_ALPHATESTENABLE,		FALSE			);		// Î±ãƒ†ã‚¹ãƒˆã‚’ç„¡åŠ¹ã«
-		d3d_device_->SetRenderState( D3DRS_ZWRITEENABLE,		TRUE			);		// Zãƒãƒƒãƒ•ã‚¡ã¸ã®æ›¸ãè¾¼ã¿è¨±å¯
-		d3d_device_->SetRenderState( D3DRS_ZENABLE,				D3DZB_TRUE		);		// Zãƒãƒƒãƒ•ã‚¡ã‚’æœ‰åŠ¹ã«ã™ã‚‹ã€‚
-		d3d_device_->SetRenderState( D3DRS_AMBIENT,				0x00888888		);		// ç’°å¢ƒå…‰
-		d3d_device_->SetRenderState( D3DRS_SRCBLEND,			D3DBLEND_ONE	);		// ã‚½ãƒ¼ã‚¹å´ã®è‰²ã®æ¯”ç‡
-		d3d_device_->SetRenderState( D3DRS_DESTBLEND,			D3DBLEND_ZERO	);		// æ›¸ãè¾¼ã¿å´ã®è‰²ã®æ¯”ç‡
-		d3d_device_->SetRenderState( D3DRS_SHADEMODE,			D3DSHADE_GOURAUD);		// ã‚·ã‚§ãƒ¼ãƒ‰ãƒ¢ãƒ¼ãƒ‰ã‚’æ»‘ã‚‰ã‹ã«ã™ã‚‹
+// ƒŒƒ“ƒ_ƒŠƒ“ƒO‚Ìİ’è
+//void DXEngine::SetRender(RenderState RState)
+//{
+//	switch(RState)
+//	{
+//	case kRenderStateNormal:
+//		// ƒŒƒ“ƒ_ƒŠƒ“ƒOƒXƒe[ƒg‚Ìİ’è
+//		d3d_device_->SetRenderState( D3DRS_CULLMODE,			D3DCULL_NONE	);		// ƒ|ƒŠƒSƒ“‚Ì— •\ƒ`ƒFƒbƒN‚ğ‚µ‚È‚¢
+//		d3d_device_->SetRenderState( D3DRS_ALPHABLENDENABLE,	FALSE			);		// ƒ¿ƒuƒŒƒ“ƒfƒBƒ“ƒO–³Œø
+//		d3d_device_->SetRenderState( D3DRS_ALPHATESTENABLE,		FALSE			);		// ƒ¿ƒeƒXƒg‚ğ–³Œø‚É
+//		d3d_device_->SetRenderState( D3DRS_ZWRITEENABLE,		TRUE			);		// Zƒoƒbƒtƒ@‚Ö‚Ì‘‚«‚İ‹–‰Â
+//		d3d_device_->SetRenderState( D3DRS_ZENABLE,				D3DZB_TRUE		);		// Zƒoƒbƒtƒ@‚ğ—LŒø‚É‚·‚éB
+//		d3d_device_->SetRenderState( D3DRS_AMBIENT,				0x00888888		);		// ŠÂ‹«Œõ
+//		d3d_device_->SetRenderState( D3DRS_SRCBLEND,			D3DBLEND_ONE	);		// ƒ\[ƒX‘¤‚ÌF‚Ì”ä—¦
+//		d3d_device_->SetRenderState( D3DRS_DESTBLEND,			D3DBLEND_ZERO	);		// ‘‚«‚İ‘¤‚ÌF‚Ì”ä—¦
+//		d3d_device_->SetRenderState( D3DRS_SHADEMODE,			D3DSHADE_GOURAUD);		// ƒVƒF[ƒhƒ‚[ƒh‚ğŠŠ‚ç‚©‚É‚·‚é
+//
+//		d3d_device_->LightEnable( kLightNumberMain, TRUE );	// ƒ‰ƒCƒg‚Ì—LŒø‰»
+//
+//		// ƒeƒNƒXƒ`ƒƒƒXƒe[ƒWƒXƒe[ƒg‚Ìİ’è
+//		d3d_device_->SetTextureStageState( 0 , D3DTSS_ALPHAOP,	D3DTOP_DISABLE );	//ƒ¿ƒ`ƒƒƒlƒ‹‚Í–³Œø‚É
+//
+//
+//		// ƒTƒ“ƒvƒ‰[ƒXƒe[ƒg‚Ìİ’è
+//		SetTextureSamplerState(D3DTEXF_LINEAR);
+//		break;
+//
+//	case kRenderStateSq:
+//		// ƒŒƒ“ƒ_ƒŠƒ“ƒOƒXƒe[ƒg‚Ìİ’è
+//		d3d_device_->SetRenderState( D3DRS_CULLMODE,			D3DCULL_NONE		);		// ƒ|ƒŠƒSƒ“‚Ì— •\ƒ`ƒFƒbƒN‚ğ‚µ‚È‚¢
+//		d3d_device_->SetRenderState( D3DRS_ALPHABLENDENABLE,	TRUE				);
+//		d3d_device_->SetRenderState( D3DRS_ALPHATESTENABLE,		TRUE				);
+//		d3d_device_->SetRenderState( D3DRS_ZWRITEENABLE,		FALSE				);
+//		d3d_device_->SetRenderState( D3DRS_ZENABLE,				D3DZB_TRUE			);		// Zƒoƒbƒtƒ@‚ğ—LŒø‚É‚·‚éB
+//		d3d_device_->SetRenderState( D3DRS_AMBIENT,				0xFFFFFFFF			);		// ŠÂ‹«Œõ
+//		d3d_device_->SetRenderState( D3DRS_SRCBLEND,			D3DBLEND_SRCALPHA	);		// ƒ\[ƒX‘¤‚ÌF‚Ì”ä—¦
+//		d3d_device_->SetRenderState( D3DRS_DESTBLEND,			D3DBLEND_INVSRCALPHA);		// ‘‚«‚İ‘¤‚ÌF‚Ì”ä—¦
+//		d3d_device_->SetRenderState( D3DRS_SHADEMODE,			D3DSHADE_GOURAUD	);		// ƒVƒF[ƒhƒ‚[ƒh‚ğŠŠ‚ç‚©‚É‚·‚é
+//
+//		d3d_device_->LightEnable( kLightNumberMain, TRUE );	// ƒ‰ƒCƒg‚Ì—LŒø‰»
+//
+//		// ƒeƒNƒXƒ`ƒƒƒXƒe[ƒWƒXƒe[ƒg‚Ìİ’è
+//		d3d_device_->SetTextureStageState( 0 , D3DTSS_ALPHAOP,	D3DTOP_DISABLE );	//ƒ¿ƒ`ƒƒƒlƒ‹‚Í–³Œø‚É
+//		d3d_device_->SetTextureStageState( 0 , D3DTSS_ALPHAARG1,	D3DTA_TEXTURE );
+//
+//		// ƒTƒ“ƒvƒ‰[ƒXƒe[ƒg‚Ìİ’è
+//		SetTextureSamplerState(D3DTEXF_LINEAR);
+//		break;
+//
+//	case kRenderStateTest:
+//		d3d_device_->SetRenderState( D3DRS_CULLMODE,		D3DCULL_NONE					);
+//		d3d_device_->SetRenderState( D3DRS_AMBIENT,			D3DCOLOR_XRGB(0xff,0xff,0xff)	);
+//		d3d_device_->SetRenderState( D3DRS_COLORVERTEX,		TRUE							);
+//		d3d_device_->SetRenderState( D3DRS_DIFFUSEMATERIALSOURCE,	D3DMCS_COLOR1			);
+//		break;
+//	}
+//}
+//
+//// ƒTƒ“ƒvƒ‰[ƒXƒe[ƒg‚Ìİ’è—pŠÖ”
+////void DXEngine::SetTextureSamplerState(D3DTEXTUREFILTERTYPE SMode)
+////{
+////	d3d_device_->SetSamplerState(0,D3DSAMP_MIPFILTER,SMode);
+////	d3d_device_->SetSamplerState(0,D3DSAMP_MAGFILTER,SMode);
+////	d3d_device_->SetSamplerState(0,D3DSAMP_MINFILTER,SMode);
+////}
+//
+//// ƒ‰ƒCƒg‚Ìİ’è‚ğs‚¤
+//void DXEngine::SetLight(LightNumber LNum,D3DLIGHT9 LParam)
+//{
+//	D3DXVECTOR3	tmpVec	= LParam.Direction;
+//	D3DXVec3Normalize((D3DXVECTOR3*)&LParam.Direction,&tmpVec);
+//	d3d_device_->SetLight(LNum,&LParam);
+//}
+//
+//// ƒJƒƒ‰‚Ìİ’è‚ğs‚¤
+//void DXEngine::SetCamera(CameraParam CParam)
+//{
+//	D3DXMATRIXA16	matView;
+//	D3DXMatrixLookAtLH(&matView,&CParam.position,&CParam.look_position,&CParam.up_vector);
+//	D3DXMATRIXA16	matProj;
+//	float	tmpAspect = (float)d3d_present_params_.BackBufferWidth / (float)d3d_present_params_.BackBufferHeight;
+//	D3DXMatrixPerspectiveFovLH(&matProj,CParam.fov_y,tmpAspect,CParam.z_near,CParam.z_far);
+//	// ƒrƒ…[ƒ}ƒgƒŠƒNƒX‚Ìİ’è
+//	d3d_device_->SetTransform(D3DTS_VIEW,&matView);
+//	// “Š‰es—ñİ’è
+//	d3d_device_->SetTransform(D3DTS_PROJECTION,&matProj);
+//}
+//
+//// ƒ‚ƒfƒ‹‚ÌˆÊ’u‚ğİ’è
+//void DXEngine::SetObjectMatrix(D3DXVECTOR3 Vec, DirectionYPR Dir,float Scale)
+//{
+//	D3DXMATRIX	ScaleMatrix;	// Šgk—ps—ñ
+//	D3DXMATRIX	PosMatrix;		// ˆÊ’u—ps—ñ
+//	D3DXMATRIX	RotMatrix;		// ‰ñ“]—ps—ñ
+//	D3DXMATRIX	ResultMatrix;	// Œ‹‰Ê‚Ìs—ñ
+//	//’PˆÊs—ñ‚ğû‚ß‚éi”O‚Ì‚½‚ßj
+//	D3DXMatrixIdentity(&ScaleMatrix);
+//	D3DXMatrixIdentity(&PosMatrix);
+//	D3DXMatrixIdentity(&RotMatrix);
+//	D3DXMatrixIdentity(&ResultMatrix);
+//	// s—ñ‚ğİ’è
+//	D3DXMatrixScaling(&ScaleMatrix,Scale,Scale,Scale);
+//	D3DXMatrixTranslation(&PosMatrix,Vec.x,Vec.y,Vec.z);
+//	D3DXMatrixRotationYawPitchRoll(&RotMatrix,Dir.Yaw,Dir.Roll,Dir.Pitch);
+//	// s—ñ‚Ì‡¬
+//	ResultMatrix = ScaleMatrix * RotMatrix * PosMatrix;
+//	// •`‰æƒfƒBƒoƒCƒX‚Ö“K—p
+//	d3d_device_->SetTransform(D3DTS_WORLD,&ResultMatrix);
+//}
 
-		d3d_device_->LightEnable( kLightNumberMain, TRUE );	// ãƒ©ã‚¤ãƒˆã®æœ‰åŠ¹åŒ–
+// w’è‚µ‚½‹“_—p‚ÌƒoƒbƒNƒoƒbƒtƒ@‚ğƒŒƒ“ƒ_ƒŠƒ“ƒO‘ÎÛ‚É
+//void DXEngine::SetViewTarget(int view_id) {
+//	d3d_device_->SetRenderTarget(0, parallax_buffers_[view_id]);
+//}
 
-		// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚¹ãƒ†ãƒ¼ã‚¸ã‚¹ãƒ†ãƒ¼ãƒˆã®è¨­å®š
-		d3d_device_->SetTextureStageState( 0 , D3DTSS_ALPHAOP,	D3DTOP_DISABLE );	//Î±ãƒãƒ£ãƒãƒ«ã¯ç„¡åŠ¹ã«
+// ƒfƒtƒHƒ‹ƒg‚ÌƒoƒbƒNƒoƒbƒtƒ@‚ğƒZƒbƒg
+//void DXEngine::SetDefaultBuffer() {
+//	d3d_device_->SetRenderTarget(0,back_buffer_);
+//}
 
+// ƒoƒbƒNƒoƒbƒtƒ@[‚ÌƒfƒoƒCƒXƒRƒ“ƒeƒLƒXƒg‚ğæ“¾
+//HRESULT DXEngine::GetBufferDC( HDC* buffer_dc ) {
+//	return back_buffer_->GetDC( buffer_dc );
+//}
 
-		// ã‚µãƒ³ãƒ—ãƒ©ãƒ¼ã‚¹ãƒ†ãƒ¼ãƒˆã®è¨­å®š
-		SetTextureSamplerState(D3DTEXF_LINEAR);
-		break;
+// ƒoƒbƒNƒoƒbƒtƒ@[‚ÌƒfƒoƒCƒXƒRƒ“ƒeƒLƒXƒg‚ğ‰ğ•ú
+//HRESULT DXEngine::ReleaseBufferDC( HDC* buffer_dc ) {
+//	return back_buffer_->ReleaseDC( *buffer_dc );
+//}
 
-	case kRenderStateSq:
-		// ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¹ãƒ†ãƒ¼ãƒˆã®è¨­å®š
-		d3d_device_->SetRenderState( D3DRS_CULLMODE,			D3DCULL_NONE		);		// ãƒãƒªã‚´ãƒ³ã®è£è¡¨ãƒã‚§ãƒƒã‚¯ã‚’ã—ãªã„
-		d3d_device_->SetRenderState( D3DRS_ALPHABLENDENABLE,	TRUE				);
-		d3d_device_->SetRenderState( D3DRS_ALPHATESTENABLE,		TRUE				);
-		d3d_device_->SetRenderState( D3DRS_ZWRITEENABLE,		FALSE				);
-		d3d_device_->SetRenderState( D3DRS_ZENABLE,				D3DZB_TRUE			);		// Zãƒãƒƒãƒ•ã‚¡ã‚’æœ‰åŠ¹ã«ã™ã‚‹ã€‚
-		d3d_device_->SetRenderState( D3DRS_AMBIENT,				0xFFFFFFFF			);		// ç’°å¢ƒå…‰
-		d3d_device_->SetRenderState( D3DRS_SRCBLEND,			D3DBLEND_SRCALPHA	);		// ã‚½ãƒ¼ã‚¹å´ã®è‰²ã®æ¯”ç‡
-		d3d_device_->SetRenderState( D3DRS_DESTBLEND,			D3DBLEND_INVSRCALPHA);		// æ›¸ãè¾¼ã¿å´ã®è‰²ã®æ¯”ç‡
-		d3d_device_->SetRenderState( D3DRS_SHADEMODE,			D3DSHADE_GOURAUD	);		// ã‚·ã‚§ãƒ¼ãƒ‰ãƒ¢ãƒ¼ãƒ‰ã‚’æ»‘ã‚‰ã‹ã«ã™ã‚‹
-
-		d3d_device_->LightEnable( kLightNumberMain, TRUE );	// ãƒ©ã‚¤ãƒˆã®æœ‰åŠ¹åŒ–
-
-		// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚¹ãƒ†ãƒ¼ã‚¸ã‚¹ãƒ†ãƒ¼ãƒˆã®è¨­å®š
-		d3d_device_->SetTextureStageState( 0 , D3DTSS_ALPHAOP,	D3DTOP_DISABLE );	//Î±ãƒãƒ£ãƒãƒ«ã¯ç„¡åŠ¹ã«
-		d3d_device_->SetTextureStageState( 0 , D3DTSS_ALPHAARG1,	D3DTA_TEXTURE );
-
-		// ã‚µãƒ³ãƒ—ãƒ©ãƒ¼ã‚¹ãƒ†ãƒ¼ãƒˆã®è¨­å®š
-		SetTextureSamplerState(D3DTEXF_LINEAR);
-		break;
-
-	case kRenderStateTest:
-		d3d_device_->SetRenderState( D3DRS_CULLMODE,		D3DCULL_NONE					);
-		d3d_device_->SetRenderState( D3DRS_AMBIENT,			D3DCOLOR_XRGB(0xff,0xff,0xff)	);
-		d3d_device_->SetRenderState( D3DRS_COLORVERTEX,		TRUE							);
-		d3d_device_->SetRenderState( D3DRS_DIFFUSEMATERIALSOURCE,	D3DMCS_COLOR1			);
-		break;
-	}
+// ‰æ–Ê‚ğƒNƒŠƒA
+void DXEngine::ClearRenderTargetView(const float color[4]) {
+	d3d_device_->ClearRenderTargetView(render_target_view_, color);
 }
 
-// ã‚µãƒ³ãƒ—ãƒ©ãƒ¼ã‚¹ãƒ†ãƒ¼ãƒˆã®è¨­å®šç”¨é–¢æ•°
-void DXEngine::SetTextureSamplerState(D3DTEXTUREFILTERTYPE SMode)
-{
-	d3d_device_->SetSamplerState(0,D3DSAMP_MIPFILTER,SMode);
-	d3d_device_->SetSamplerState(0,D3DSAMP_MAGFILTER,SMode);
-	d3d_device_->SetSamplerState(0,D3DSAMP_MINFILTER,SMode);
-}
-
-// ãƒ©ã‚¤ãƒˆã®è¨­å®šã‚’è¡Œã†
-void DXEngine::SetLight(LightNumber LNum,D3DLIGHT9 LParam)
-{
-	D3DXVECTOR3	tmpVec	= LParam.Direction;
-	D3DXVec3Normalize((D3DXVECTOR3*)&LParam.Direction,&tmpVec);
-	d3d_device_->SetLight(LNum,&LParam);
-}
-
-// ã‚«ãƒ¡ãƒ©ã®è¨­å®šã‚’è¡Œã†
-void DXEngine::SetCamera(CameraParam CParam)
-{
-	D3DXMATRIXA16	matView;
-	D3DXMatrixLookAtLH(&matView,&CParam.position,&CParam.look_position,&CParam.up_vector);
-	D3DXMATRIXA16	matProj;
-	float	tmpAspect = (float)d3d_present_params_.BackBufferWidth / (float)d3d_present_params_.BackBufferHeight;
-	D3DXMatrixPerspectiveFovLH(&matProj,CParam.fov_y,tmpAspect,CParam.z_near,CParam.z_far);
-	// ãƒ“ãƒ¥ãƒ¼ãƒãƒˆãƒªã‚¯ã‚¹ã®è¨­å®š
-	d3d_device_->SetTransform(D3DTS_VIEW,&matView);
-	// æŠ•å½±è¡Œåˆ—è¨­å®š
-	d3d_device_->SetTransform(D3DTS_PROJECTION,&matProj);
-}
-
-// ãƒ¢ãƒ‡ãƒ«ã®ä½ç½®ã‚’è¨­å®š
-void DXEngine::SetObjectMatrix(D3DXVECTOR3 Vec, DirectionYPR Dir,float Scale)
-{
-	D3DXMATRIX	ScaleMatrix;	// æ‹¡ç¸®ç”¨è¡Œåˆ—
-	D3DXMATRIX	PosMatrix;		// ä½ç½®ç”¨è¡Œåˆ—
-	D3DXMATRIX	RotMatrix;		// å›è»¢ç”¨è¡Œåˆ—
-	D3DXMATRIX	ResultMatrix;	// çµæœã®è¡Œåˆ—
-	//å˜ä½è¡Œåˆ—ã‚’åã‚ã‚‹ï¼ˆå¿µã®ãŸã‚ï¼‰
-	D3DXMatrixIdentity(&ScaleMatrix);
-	D3DXMatrixIdentity(&PosMatrix);
-	D3DXMatrixIdentity(&RotMatrix);
-	D3DXMatrixIdentity(&ResultMatrix);
-	// è¡Œåˆ—ã‚’è¨­å®š
-	D3DXMatrixScaling(&ScaleMatrix,Scale,Scale,Scale);
-	D3DXMatrixTranslation(&PosMatrix,Vec.x,Vec.y,Vec.z);
-	D3DXMatrixRotationYawPitchRoll(&RotMatrix,Dir.Yaw,Dir.Roll,Dir.Pitch);
-	// è¡Œåˆ—ã®åˆæˆ
-	ResultMatrix = ScaleMatrix * RotMatrix * PosMatrix;
-	// æç”»ãƒ‡ã‚£ãƒã‚¤ã‚¹ã¸é©ç”¨
-	d3d_device_->SetTransform(D3DTS_WORLD,&ResultMatrix);
-}
-
-// æŒ‡å®šã—ãŸè¦–ç‚¹ç”¨ã®ãƒãƒƒã‚¯ãƒãƒƒãƒ•ã‚¡ã‚’ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°å¯¾è±¡ã«
-void DXEngine::SetViewTarget(int view_id) {
-	d3d_device_->SetRenderTarget(0, parallax_buffers_[view_id]);
-}
-
-// ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®ãƒãƒƒã‚¯ãƒãƒƒãƒ•ã‚¡ã‚’ã‚»ãƒƒãƒˆ
-void DXEngine::SetDefaultBuffer() {
-	d3d_device_->SetRenderTarget(0,back_buffer_);
-}
-
-// ãƒãƒƒã‚¯ãƒãƒƒãƒ•ã‚¡ãƒ¼ã®ãƒ‡ãƒã‚¤ã‚¹ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã‚’å–å¾—
-HRESULT DXEngine::GetBufferDC( HDC* buffer_dc ) {
-	return back_buffer_->GetDC( buffer_dc );
-}
-
-// ãƒãƒƒã‚¯ãƒãƒƒãƒ•ã‚¡ãƒ¼ã®ãƒ‡ãƒã‚¤ã‚¹ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã‚’è§£æ”¾
-HRESULT DXEngine::ReleaseBufferDC( HDC* buffer_dc ) {
-	return back_buffer_->ReleaseDC( *buffer_dc );
-}
-
-// DirectInputã®åˆæœŸåŒ–
+// DirectInput‚Ì‰Šú‰»
 HRESULT DXEngine::InitDirectInput(HWND hWnd,HINSTANCE hInstance)
 {
-	HRESULT		hr = S_OK;			//ãšã£ã“ã‘ãŸæ™‚ç”¨ã®çµæœè¿”ã—ç”¨
-	// æœ€åˆã«åˆæœŸåŒ–ã—ã¦ãŠã
+	HRESULT		hr = S_OK;			//‚¸‚Á‚±‚¯‚½—p‚ÌŒ‹‰Ê•Ô‚µ—p
+	// Å‰‚É‰Šú‰»‚µ‚Ä‚¨‚­
 	CleanUpDirectInput();
 
-	// DirectInputã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ç”Ÿæˆ
-	// ä»¥ä¸‹ã€ã»ã¨ã‚“ã©å®šå‹å¥
+	// DirectInputƒIƒuƒWƒFƒNƒg‚Ì¶¬
+	// ˆÈ‰ºA‚Ù‚Æ‚ñ‚Ç’èŒ^‹å
 	if(FAILED(hr = DirectInput8Create(hInstance,DIRECTINPUT_VERSION,IID_IDirectInput8,(VOID**)&direct_input_,NULL)))
 	{return(hr);}
 
-	// ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã®ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—
+	// ƒL[ƒ{[ƒh‚ÌƒZƒbƒgƒAƒbƒv
 	if(FAILED(hr = SetupKeybord(hWnd))){return(hr);}
 	if(FAILED(hr = SetupMouse(hWnd))){return(hr);}
 
 	return(hr);
 }
 
-// DirectInputé–¢ä¿‚ã®å¤‰æ•°ã®åˆæœŸåŒ–
+// DirectInputŠÖŒW‚Ì•Ï”‚Ì‰Šú‰»
 VOID DXEngine::CleanUpDirectInput(void)
 {
-	// DirectInputã§ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ãŒä½¿ç”¨ä¸­ã ã£ãŸå ´åˆã€ä½¿ç”¨ã‚’çµ‚äº†ã™ã‚‹ã€‚
+	// DirectInput‚ÅƒL[ƒ{[ƒh‚ªg—p’†‚¾‚Á‚½ê‡Ag—p‚ğI—¹‚·‚éB
 	if(din_keybord_){din_keybord_->Unacquire();}
 	if(din_mouse_){din_mouse_->Unacquire();}
-	// ãƒ‡ãƒã‚¤ã‚¹ã‚’é–‹æ”¾ã™ã‚‹
+	// ƒfƒoƒCƒX‚ğŠJ•ú‚·‚é
 	SAFE_RELEASE(din_keybord_);
 	SAFE_RELEASE(din_mouse_);
-	// DirectInputã®è§£æ”¾
+	// DirectInput‚Ì‰ğ•ú
 	SAFE_RELEASE(direct_input_);
 }
 
-// DirectInputã§ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã‚’ä½¿ç”¨å¯èƒ½ã«ã™ã‚‹
+// DirectInput‚ÅƒL[ƒ{[ƒh‚ğg—p‰Â”\‚É‚·‚é
 HRESULT DXEngine::SetupKeybord(HWND hWnd)
 {
-	HRESULT		hr;			//ãšã£ã“ã‘ãŸæ™‚ç”¨ã®çµæœè¿”ã—ç”¨
+	HRESULT		hr;			//‚¸‚Á‚±‚¯‚½—p‚ÌŒ‹‰Ê•Ô‚µ—p
 
-	// ã‚·ã‚¹ãƒ†ãƒ ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ãƒ‡ã‚£ãƒã‚¤ã‚¹ã‚’æ¢ã—ã¦ç¢ºä¿ã—ã¦ãŠãã€‚
-	// ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ãŒç„¡ã„å ´åˆï¼ˆå±•ç¤ºç”¨ã«ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã‚’ã¯å¤–ã™ãªã©ã—ã¦ã„ã‚‹ï¼‰ã¯æ³¨æ„ãŒå¿…è¦
+	// ƒVƒXƒeƒ€ƒL[ƒ{[ƒhƒfƒBƒoƒCƒX‚ğ’T‚µ‚ÄŠm•Û‚µ‚Ä‚¨‚­B
+	// ƒL[ƒ{[ƒh‚ª–³‚¢ê‡i“W¦—p‚ÉƒL[ƒ{[ƒh‚ğ‚ÍŠO‚·‚È‚Ç‚µ‚Ä‚¢‚éj‚Í’ˆÓ‚ª•K—v
 	if(FAILED(hr = direct_input_->CreateDevice(GUID_SysKeyboard,&din_keybord_,NULL)))
 	{return(hr);}
 
 	if(din_keybord_ == NULL)
 	{
-		MessageBox(NULL,TEXT("ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã‚’ç™ºè¦‹ã§ãã¾ã›ã‚“ã§ã—ãŸã€‚\nï¼ˆãã‚“ãªãƒã‚«ãªï¼Ÿï¼‰"),kErrorMessage,MB_ICONERROR|MB_OK);
-		return(S_OK);		//ã“ã“ã§å¸°ã£ã¦ã—ã¾ã†
+		MessageBox(NULL,TEXT("ƒL[ƒ{[ƒh‚ğ”­Œ©‚Å‚«‚Ü‚¹‚ñ‚Å‚µ‚½B\ni‚»‚ñ‚ÈƒoƒJ‚ÈHj"),kErrorMessage,MB_ICONERROR|MB_OK);
+		return(S_OK);		//‚±‚±‚Å‹A‚Á‚Ä‚µ‚Ü‚¤
 	}
 
-	// DirectInputã‹ã‚‰å—ã‘å–ã‚‹ãƒ‡ãƒ¼ã‚¿ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã‚’ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã«è¨­å®šã™ã‚‹
-	// c_dfDIKeyboardã¯ã€DirectInputãŒç”¨æ„ã—ãŸã‚°ãƒ­ãƒ¼ãƒãƒ«å¤‰æ•°
-	// constè¨­å®šã•ã‚Œã¦ã„ã¦å¤‰æ•°ã®å€¤ã¯å¤‰æ›´ã§ããªã„
+	// DirectInput‚©‚çó‚¯æ‚éƒf[ƒ^ƒtƒH[ƒ}ƒbƒg‚ğƒL[ƒ{[ƒh‚Éİ’è‚·‚é
+	// c_dfDIKeyboard‚ÍADirectInput‚ª—pˆÓ‚µ‚½ƒOƒ[ƒoƒ‹•Ï”
+	// constİ’è‚³‚ê‚Ä‚¢‚Ä•Ï”‚Ì’l‚Í•ÏX‚Å‚«‚È‚¢
 	if(FAILED(hr = din_keybord_->SetDataFormat(&c_dfDIKeyboard)))
 	{return(hr);}
 
-	// ã‚·ã‚¹ãƒ†ãƒ ã‚„ã€ä»–ã®DirectInputã‚’åˆ©ç”¨ã—ãŸã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã¨ã€ã©ã®ã‚ˆã†ã«é€£æºã™ã‚Œã°ã‚ˆã„ã®ã‹
-	// DirectInputã«é€šçŸ¥ã™ã‚‹ãŸã‚ã«ã€å”èª¿ãƒ¬ãƒ™ãƒ«ã‚’ã‚»ãƒƒãƒˆã™ã‚‹ã€‚
-	//ï¼ˆãƒ•ã‚©ã‚¢ã‚°ãƒ©ãƒ³ãƒ‰ãƒ»ç›´æ¥å…¥åŠ›ãƒ»å”èª¿ãƒ¢ãƒ¼ãƒ‰ãƒ»Windowsã‚­ãƒ¼ç„¡åŠ¹ã«å›ºå®šï¼‰
+	// ƒVƒXƒeƒ€‚âA‘¼‚ÌDirectInput‚ğ—˜—p‚µ‚½ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ÆA‚Ç‚Ì‚æ‚¤‚É˜AŒg‚·‚ê‚Î‚æ‚¢‚Ì‚©
+	// DirectInput‚É’Ê’m‚·‚é‚½‚ß‚ÉA‹¦’²ƒŒƒxƒ‹‚ğƒZƒbƒg‚·‚éB
+	//iƒtƒHƒAƒOƒ‰ƒ“ƒhE’¼Ú“ü—ÍE‹¦’²ƒ‚[ƒhEWindowsƒL[–³Œø‚ÉŒÅ’èj
 	if(FAILED(hr = din_keybord_->SetCooperativeLevel(hWnd,DISCL_NONEXCLUSIVE|DISCL_FOREGROUND|DISCL_NOWINKEY)))
 	{return(hr);}
 
-	// ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã®å…¥åŠ›ã‚’æœ‰åŠ¹ã«ã™ã‚‹ã€‚
+	// ƒL[ƒ{[ƒh‚Ì“ü—Í‚ğ—LŒø‚É‚·‚éB
 	din_keybord_->Acquire();
 
 	return(S_OK);
 }
 
-// ãƒã‚¦ã‚¹ã‚’ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—
+// ƒ}ƒEƒX‚ğƒZƒbƒgƒAƒbƒv
 HRESULT DXEngine::SetupMouse(HWND hWnd)
 {
-	HRESULT		hr = S_OK;	//æˆ»ã‚Šå€¤ã®è¨­å®š
+	HRESULT		hr = S_OK;	//–ß‚è’l‚Ìİ’è
 
-	// ã‚·ã‚¹ãƒ†ãƒ ãƒã‚¦ã‚¹ãƒ‡ãƒã‚¤ã‚¹ã‚’æ¢ã—ã¦ç¢ºä¿ã™ã‚‹ã€‚
+	// ƒVƒXƒeƒ€ƒ}ƒEƒXƒfƒoƒCƒX‚ğ’T‚µ‚ÄŠm•Û‚·‚éB
 	if(FAILED(hr = direct_input_->CreateDevice(GUID_SysMouse,&din_mouse_,NULL))){return(hr);}
 
 	if(NULL == din_mouse_)
 	{
-		MessageBox(NULL,TEXT("ãƒã‚¦ã‚¹ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“ã§ã—ãŸï¼ˆãã‚“ãªãƒã‚«ãªï¼Ÿï¼‰\nä»–ã®ãƒ‡ãƒã‚¤ã‚¹ã§æ“ä½œã‚’ã—ã¾ã™"),kErrorMessage,MB_ICONERROR|MB_OK);
-		return(hr);	//ã“ã“ã§å¸°ã£ã¦ã—ã¾ã†
+		MessageBox(NULL,TEXT("ƒ}ƒEƒX‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ‚Å‚µ‚½i‚»‚ñ‚ÈƒoƒJ‚ÈHj\n‘¼‚ÌƒfƒoƒCƒX‚Å‘€ì‚ğ‚µ‚Ü‚·"),kErrorMessage,MB_ICONERROR|MB_OK);
+		return(hr);	//‚±‚±‚Å‹A‚Á‚Ä‚µ‚Ü‚¤
 	}
 
-	// DirectInputã‹ã‚‰å—ã‘å–ã‚‹ãƒ‡ãƒ¼ã‚¿ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã‚’ãƒã‚¦ã‚¹ï¼ˆæ‹¡å¼µä»•æ§˜ï¼‰ã«è¨­å®šã™ã‚‹
-	// c_dfDIMouse2ã¯DirectInputãŒç”¨æ„ã—ãŸã‚°ãƒ­ãƒ¼ãƒãƒ«å¤‰æ•°ã§constè¨­å®šã•ã‚Œã¦ã„ã¦å¤‰æ•°ã®å€¤ã¯å¤‰æ›´ã§ããªã„ã€‚
-	// ã“ã®éƒ¨åˆ†ã¯Joystickã®å‡¦ç†ã¨åŒæ§˜ã€‚ãŸã ã—è¤‡æ•°ã®ãƒã‚¦ã‚¹ãŒã‚ã‚‹äº‹ã¯è€ƒãˆã‚‰ã‚Œã¦ã„ãªã„ã€‚
+	// DirectInput‚©‚çó‚¯æ‚éƒf[ƒ^ƒtƒH[ƒ}ƒbƒg‚ğƒ}ƒEƒXiŠg’£d—lj‚Éİ’è‚·‚é
+	// c_dfDIMouse2‚ÍDirectInput‚ª—pˆÓ‚µ‚½ƒOƒ[ƒoƒ‹•Ï”‚Åconstİ’è‚³‚ê‚Ä‚¢‚Ä•Ï”‚Ì’l‚Í•ÏX‚Å‚«‚È‚¢B
+	// ‚±‚Ì•”•ª‚ÍJoystick‚Ìˆ—‚Æ“¯—lB‚½‚¾‚µ•¡”‚Ìƒ}ƒEƒX‚ª‚ ‚é–‚Íl‚¦‚ç‚ê‚Ä‚¢‚È‚¢B
 	if(FAILED(hr = din_mouse_->SetDataFormat(&c_dfDIMouse2)))
 	{return(hr);}
 
-	// ä»–ã®ãƒ‡ãƒã‚¤ã‚¹ã¨åŒæ§˜ã«å”èª¿ãƒ¬ãƒ™ãƒ«ã‚’ã‚»ãƒƒãƒˆã™ã‚‹ã€‚
-	// ã“ã“ã§ã¯ãƒ•ã‚©ã‚¢ã‚°ãƒ©ãƒ³ãƒ‰ãƒ»æ’ä»–çš„åˆ©ç”¨ãƒ¢ãƒ¼ãƒ‰ã«å›ºå®š
-	// ã‚²ãƒ¼ãƒ ã®æ“ä½œã®ãŸã‚ã«ãƒã‚¦ã‚¹ã‚’ä½¿ã†å ´åˆã¯ã€é€šå¸¸ã“ã®ãƒ¢ãƒ¼ãƒ‰ã§ã‹ã¾ã‚ãªã„ã€‚
-	// ã—ã‹ã—ã€ã“ã®ãƒ¢ãƒ¼ãƒ‰ã§ã¯ã€ãƒã‚¦ã‚¹ã‚«ãƒ¼ã‚½ãƒ«ãŒè¦‹ãˆãªããªã‚‹ãŸã‚ã€
-	// ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³å´ã§ãƒã‚¦ã‚¹ã‚«ãƒ¼ã‚½ãƒ«ã‚’ç‹¬è‡ªã«è¡¨ç¤ºã•ã›ã‚‹ãªã©å·¥å¤«ãŒå¿…è¦ã«ãªã‚‹ã®ã§è¦æ³¨æ„ã€‚
+	// ‘¼‚ÌƒfƒoƒCƒX‚Æ“¯—l‚É‹¦’²ƒŒƒxƒ‹‚ğƒZƒbƒg‚·‚éB
+	// ‚±‚±‚Å‚ÍƒtƒHƒAƒOƒ‰ƒ“ƒhE”r‘¼“I—˜—pƒ‚[ƒh‚ÉŒÅ’è
+	// ƒQ[ƒ€‚Ì‘€ì‚Ì‚½‚ß‚Éƒ}ƒEƒX‚ğg‚¤ê‡‚ÍA’Êí‚±‚Ìƒ‚[ƒh‚Å‚©‚Ü‚í‚È‚¢B
+	// ‚µ‚©‚µA‚±‚Ìƒ‚[ƒh‚Å‚ÍAƒ}ƒEƒXƒJ[ƒ\ƒ‹‚ªŒ©‚¦‚È‚­‚È‚é‚½‚ßA
+	// ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‘¤‚Åƒ}ƒEƒXƒJ[ƒ\ƒ‹‚ğ“Æ©‚É•\¦‚³‚¹‚é‚È‚ÇH•v‚ª•K—v‚É‚È‚é‚Ì‚Å—v’ˆÓB
 	if(FAILED(hr = din_mouse_->SetCooperativeLevel(hWnd,DISCL_EXCLUSIVE|DISCL_FOREGROUND)))
 	{
 		CleanUpDirectInput();
 		if(hr == DIERR_UNSUPPORTED)
 		{
-			MessageBox(NULL,TEXT("DirectInputãŒã‚µãƒãƒ¼ãƒˆã—ã¦ã„ãªã„å”èª¿ãƒ¬ãƒ™ãƒ«ã§ã™ã€‚"),kErrorMessage,MB_ICONERROR|MB_OK);
+			MessageBox(NULL,TEXT("DirectInput‚ªƒTƒ|[ƒg‚µ‚Ä‚¢‚È‚¢‹¦’²ƒŒƒxƒ‹‚Å‚·B"),kErrorMessage,MB_ICONERROR|MB_OK);
 		}
 		return(hr);
 	}
 
-	// ãƒã‚¦ã‚¹ã®å…¥åŠ›ã‚’æœ‰åŠ¹ã«ã™ã‚‹ã€‚
+	// ƒ}ƒEƒX‚Ì“ü—Í‚ğ—LŒø‚É‚·‚éB
 	din_mouse_->Acquire();
 
 	return(S_OK);
 }
 
-// å…¥åŠ›ã‚’å—ã‘å–ã‚‹
+// “ü—Í‚ğó‚¯æ‚é
 void DXEngine::GetInput()
 {
 	if(din_keybord_){GetKeybordInput();}
 	if(din_mouse_){GetMouseInput();}
 }
 
-// ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã®çŠ¶æ…‹ã‚’æ ¼ç´
+// ƒL[ƒ{[ƒh‚Ìó‘Ô‚ğŠi”[
 void DXEngine::GetKeybordInput()
 {
 	HRESULT	hr;
-	// ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã®çŠ¶æ…‹åˆæœŸåŒ–
+	// ƒL[ƒ{[ƒh‚Ìó‘Ô‰Šú‰»
 	ZeroMemory(key_state_,sizeof(key_state_));
-	// ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ãƒ‡ã‚£ãƒã‚¤ã‚¹ãŒç„¡ã„å ´åˆã¯ã€æ»‘ã‚‰ã‹ã«å»ã‚‹ã€‚
+	// ƒL[ƒ{[ƒhƒfƒBƒoƒCƒX‚ª–³‚¢ê‡‚ÍAŠŠ‚ç‚©‚É‹‚éB
 	if(NULL == din_keybord_){return;}
-	// çŠ¶æ…‹ã‚’å–å¾—
+	// ó‘Ô‚ğæ“¾
 	hr = din_keybord_->GetDeviceState(sizeof(key_state_),key_state_);
 	if(FAILED(hr))
 	{
-		// ã‚‚ã—å…¥åŠ›ãŒå¤±ã‚ã‚Œã¦ã„ãŸå ´åˆã€ç¢ºä¿ã—ã€ç¶­æŒã‚’è©¦ã¿ã‚‹ã€‚
+		// ‚à‚µ“ü—Í‚ª¸‚í‚ê‚Ä‚¢‚½ê‡AŠm•Û‚µAˆÛ‚ğ‚İ‚éB
 		hr = din_keybord_->Acquire();
 		while(hr == DIERR_INPUTLOST){hr = din_keybord_->Acquire();}
-		// ã‚¨ãƒ©ãƒ¼æ™‚ã¯å¸°ã‚‹ã€‚
+		// ƒGƒ‰[‚Í‹A‚éB
 		if(FAILED(hr)){return;}
 	}
 }
 
-// ãƒã‚¦ã‚¹ã®çŠ¶æ…‹ã‚’æ ¼ç´
+// ƒ}ƒEƒX‚Ìó‘Ô‚ğŠi”[
 void DXEngine::GetMouseInput()
 {
 	HRESULT			hr;
-	// ãƒã‚¦ã‚¹ã®çŠ¶æ…‹åˆæœŸåŒ–
+	// ƒ}ƒEƒX‚Ìó‘Ô‰Šú‰»
 	ZeroMemory(&mouse_state_,sizeof(DIMOUSESTATE2));
-	// ãƒã‚¦ã‚¹ãŒç„¡ã„å ´åˆã¯ã€æ»‘ã‚‰ã‹ã«å»ã‚‹ã€‚
+	// ƒ}ƒEƒX‚ª–³‚¢ê‡‚ÍAŠŠ‚ç‚©‚É‹‚éB
 	if(NULL == din_mouse_){return;}
 	hr = din_mouse_->GetDeviceState(sizeof(DIMOUSESTATE2),&mouse_state_);
 	if(FAILED(hr))
 	{
-		// ã‚‚ã—å…¥åŠ›ãŒå¤±ã‚ã‚Œã¦ã„ãŸå ´åˆã€å†ç¢ºä¿ã‚’è©¦ã¿ã‚‹ã€‚
+		// ‚à‚µ“ü—Í‚ª¸‚í‚ê‚Ä‚¢‚½ê‡AÄŠm•Û‚ğ‚İ‚éB
 		hr = din_mouse_->Acquire();
 		while(hr == DIERR_INPUTLOST){hr = din_mouse_->Acquire();}
-		// ã‚¨ãƒ©ãƒ¼æ™‚ã¯ä»–ã®ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ãŒãƒ•ã‚©ã‚¢ã‚°ãƒ©ãƒ³ãƒ‰ã«ãªã£ã¦ã„ãŸã‚Šã™ã‚‹ã®ã§ä½•ã‚‚ã—ãªã„ã§å¸°ã‚‹ã€‚
+		// ƒGƒ‰[‚Í‘¼‚ÌƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ªƒtƒHƒAƒOƒ‰ƒ“ƒh‚É‚È‚Á‚Ä‚¢‚½‚è‚·‚é‚Ì‚Å‰½‚à‚µ‚È‚¢‚Å‹A‚éB
 		if(FAILED(hr))
 		{
 			return;
@@ -480,13 +501,13 @@ void DXEngine::GetMouseInput()
 	}
 }
 
-// ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã®çŠ¶æ…‹ã‚’è¿”ã™
+// ƒL[ƒ{[ƒh‚Ìó‘Ô‚ğ•Ô‚·
 BYTE* DXEngine::get_keybord_state()
 {
 	return key_state_;
 }
 
-// ãƒã‚¦ã‚¹ã®çŠ¶æ…‹ã‚’è¿”ã™
+// ƒ}ƒEƒX‚Ìó‘Ô‚ğ•Ô‚·
 DIMOUSESTATE2 DXEngine::get_mouse_state()
 {
 	return mouse_state_;

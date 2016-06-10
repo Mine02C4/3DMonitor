@@ -1,34 +1,34 @@
-ï»¿// Copyright 2011 MineStudio.
-// ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã§ä½¿ç”¨ã™ã‚‹å‹å‘½å(typedef)ã‚’ã—ã¦ã„ãã¾ã™
+// Copyright 2011 MineStudio.
+// ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚Åg—p‚·‚éŒ^–½–¼(typedef)‚ğ‚µ‚Ä‚¢‚«‚Ü‚·
 
 #ifndef NPCA3DMONITOR__TYPEDEFS_H_
 #define NPCA3DMONITOR__TYPEDEFS_H_
 
-#include <d3dx9.h>
+#include <d3dx10.h>
 
 // ------
-// åˆ—æŒ™å‹
+// —ñ‹“Œ^
 // ------
 
-// ãƒ—ãƒ­ã‚°ãƒ©ãƒ ãƒ¢ãƒ¼ãƒ‰ã‚’å®šç¾©
+// ƒvƒƒOƒ‰ƒ€ƒ‚[ƒh‚ğ’è‹`
 enum ProgramMode {
-	kProgramModeStaring,	// èµ·å‹•ä¸­
-	kProgramModeMain,		// ãƒ¡ã‚¤ãƒ³
+	kProgramModeStaring,	// ‹N“®’†
+	kProgramModeMain,		// ƒƒCƒ“
 	kProgramModeDebug
 };
 
 // ------
-// æ§‹é€ ä½“
+// \‘¢‘Ì
 // ------
 
-// ã‚«ãƒ¡ãƒ©ã®æƒ…å ±æ ¼ç´
+// ƒJƒƒ‰‚Ìî•ñŠi”[
 struct CameraParam {
 	D3DXVECTOR3	position;
 	D3DXVECTOR3	look_position;
 	D3DXVECTOR3	up_vector;
-	float		fov_y;		// Yè»¸æ–¹å‘ã¸ã®è¦–é‡è§’
-	float		z_near;		// æœ€çŸ­è·é›¢
-	float		z_far;		// æœ€é•·è·é›¢
+	float		fov_y;		// Y²•ûŒü‚Ö‚Ì‹–ìŠp
+	float		z_near;		// Å’Z‹——£
+	float		z_far;		// Å’·‹——£
 	CameraParam(){};
 	CameraParam(float c_fov,float c_z_near,float c_z_far,D3DXVECTOR3 c_position) {
 		fov_y			= c_fov;

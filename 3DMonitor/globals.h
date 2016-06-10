@@ -1,5 +1,5 @@
-﻿// Copyright 2011 MineStudio.
-// グローバル変数を宣言していきます
+// Copyright 2011 MineStudio.
+// �O���[�o���ϐ���錾���Ă����܂�
 
 #ifndef NPCA3DMONITOR__GLOBALS_H_
 #define NPCA3DMONITOR__GLOBALS_H_
